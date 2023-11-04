@@ -12,6 +12,9 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import edu.msoe.budget_app.R
 import edu.msoe.budget_app.databinding.FragmentHomeBinding
+import java.text.DecimalFormat
+import java.text.SimpleDateFormat
+import java.util.Date
 
 class HomeFragment : Fragment() {
 
@@ -20,6 +23,8 @@ class HomeFragment : Fragment() {
     // This property is only valid between onCreateView and
     // onDestroyView.
     private val binding get() = _binding!!
+    private val df = DecimalFormat("#.##")
+
 
     val dateAndMoneyArray = arrayOf(
         "2023-11-01,25.50",
@@ -39,6 +44,35 @@ class HomeFragment : Fragment() {
         "2023-10-16,11.25"
     )
 
+    private  fun calculateTotal(): Double {
+        var total = 0.0;
+
+        for(item in dateAndMoneyArray){
+            val parts = item.split(",")
+            val amount = parts[1]
+            total += amount.toDouble()
+
+        }
+        return total
+    }
+    fun monthNumberToName(monthNumber: Int): String {
+        return when (monthNumber) {
+            1 -> "January"
+            2 -> "February"
+            3 -> "March"
+            4 -> "April"
+            5 -> "May"
+            6 -> "June"
+            7 -> "July"
+            8 -> "August"
+            9 -> "September"
+            10 -> "October"
+            11 -> "November"
+            12 -> "December"
+            else -> "Invalid month number"
+        }
+    }
+
 
 
 
@@ -48,11 +82,26 @@ class HomeFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
+
+        // on below line we are creating and initializing
+        // variable for simple date format.
+        val sdf = SimpleDateFormat("MM-dd-yyyy")
+
+        // on below line we are creating a variable for
+        // current date and time and calling a simple
+        // date format in it.
+        val currentDate = sdf.format(Date())
+        var dateParts = currentDate.split("-")
+        val currentMonth = dateParts[0]
+        val currentMonthName = monthNumberToName(currentMonth.toInt())
+
+
         val homeViewModel =
             ViewModelProvider(this).get(HomeViewModel::class.java)
 
         _binding = FragmentHomeBinding.inflate(inflater, container, false)
         val root: View = binding.root
+        val total = calculateTotal()
         val tableLayout = root.findViewById<TableLayout>(R.id.tableLayout) // Assuming you have a TableLayout in your layout file with the ID 'tableLayout'
         for (item in dateAndMoneyArray) {
             val parts = item.split(",") // Split the string into date and money parts
@@ -95,9 +144,11 @@ class HomeFragment : Fragment() {
             val blankRow = TableRow(root.context)
             blankRow.addView(blankView)
             tableLayout.addView(blankRow)
-
-
         }
+        val totalView = root.findViewById<TextView>(R.id.totalText)
+        totalView.text =  "Total Spending is: " + df.format(total) + " dollars"
+        val currentMonthText = root.findViewById<TextView>(R.id.currentMonthText)
+        currentMonthText.text = "Current Spending For: $currentMonthName"
 
 
         //val textView: TextView = binding.textHome
