@@ -32,4 +32,5 @@ class DataViewModel: ViewModel() {
         "2023-09-27,30.00"
     )
     var selectedMonth = "NOVEMBER"
+    var budget = 5000;
 }

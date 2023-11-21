@@ -42,6 +42,7 @@ class HomeFragment : Fragment() {
 
 
 
+
     private  fun calculateTotal(): Double {
         var total = 0.0;
 
@@ -104,9 +105,9 @@ class HomeFragment : Fragment() {
 
 
         val testing = getLinesForMonth(viewModel.data,monthNameToNumber(viewModel.selectedMonth))
-        for(i in testing){
-           Log.d("OUCH", i)
-        }
+
+
+
         dateAndMoneyArray = testing.toTypedArray()
 
         Log.d("AH", viewModel.data.toString())
@@ -123,25 +124,26 @@ class HomeFragment : Fragment() {
         val currentMonthName = viewModel.selectedMonth
 
 
-        val homeViewModel =
-            ViewModelProvider(this).get(HomeViewModel::class.java)
-
-
+//        val homeViewModel =
+//            ViewModelProvider(this).get(HomeViewModel::class.java)
 
         _binding = FragmentHomeBinding.inflate(inflater, container, false)
         root = binding.root
 
-        val total = calculateTotal()
+
         val tableLayout = root.findViewById<TableLayout>(R.id.tableLayout) // Assuming you have a TableLayout in your layout file with the ID 'tableLayout'
         val addButton = root.findViewById<Button>(R.id.addButton)
         addButton.setOnClickListener {
             showAddPopup()
         }
         recreateTable()
-        val totalView = root.findViewById<TextView>(R.id.totalText)
-        totalView.text =  "Total Spending is: " + df.format(total) + " dollars"
+//        val totalView = root.findViewById<TextView>(R.id.totalText)
+//        totalView.text =  "Total Spending is: " + df.format(total) + " dollars"
         val currentMonthText = root.findViewById<TextView>(R.id.currentMonthText)
         currentMonthText.text = "Current Spending For: $currentMonthName"
+
+        val budgetText = root.findViewById<TextView>(R.id.budgetText)
+        budgetText.text = "You're budget is: " + viewModel.budget
 
 
         //val textView: TextView = binding.textHome
@@ -231,8 +233,12 @@ class HomeFragment : Fragment() {
             monthNameToNumber(activityViewModels<DataViewModel>().value.selectedMonth)
         )
 
-        // Re-create the table with the updated data
+        var total = 0.0 // Declare the total variable here
 
+        // Get the budget from the ViewModel
+        val budget = activityViewModels<DataViewModel>().value.budget.toDouble()
+
+        // Re-create the table with the updated data
         for (item in testing) {
             val parts = item.split(",") // Split the string into date and money parts
             if (parts.size == 2) {
@@ -240,7 +246,6 @@ class HomeFragment : Fragment() {
                 val moneySpent = parts[1]
 
                 val row = TableRow(root.context) // Create a new TableRow
-
 
                 val dateTextView = TextView(root.context) // Create a TextView for the date
                 dateTextView.text = date
@@ -255,7 +260,8 @@ class HomeFragment : Fragment() {
                 row.addView(dateTextView)
 
                 val moneySpentTextView = TextView(root.context) // Create a TextView for the money spent
-                moneySpentTextView.text = df.format(moneySpent.toDouble())
+                val formattedMoneySpent = df.format(moneySpent.toDouble())
+                moneySpentTextView.text = formattedMoneySpent
 
                 val moneySpentLayoutParams = TableRow.LayoutParams(
                     TableRow.LayoutParams.WRAP_CONTENT,
@@ -265,22 +271,31 @@ class HomeFragment : Fragment() {
                 moneySpentTextView.layoutParams = moneySpentLayoutParams
 
                 row.addView(moneySpentTextView) // Add the money spent TextView to the TableRow
-                // Add the money spent TextView to the TableRow
+
+                // Update the total with the formattedMoneySpent value
+                total += formattedMoneySpent.toDouble()
+
+                // Check if the total exceeds the budget and highlight the row if needed
+                if (total > budget) {
+                    row.setBackgroundColor(root.resources.getColor(android.R.color.holo_red_light))
+                }
 
                 tableLayout.addView(row) // Add the TableRow to the TableLayout
             }
             val blankView = TextView(root.context)
-            blankView.text = "";
+            blankView.text = ""
             val blankRow = TableRow(root.context)
             blankRow.addView(blankView)
             tableLayout.addView(blankRow)
         }
 
-        // Update the total
+        // Update the totalView
         val totalView = root.findViewById<TextView>(R.id.totalText)
-        val total = calculateTotal()
+        println(total)
         totalView.text = "Total Spending is: " + df.format(total) + " dollars"
     }
+
+
 
     override fun onDestroyView() {
         super.onDestroyView()

@@ -8,7 +8,9 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.ViewModelProvider
+import edu.msoe.budget_app.DataViewModel
 import edu.msoe.budget_app.R
 import edu.msoe.budget_app.databinding.FragmentNotificationsBinding
 
@@ -27,19 +29,22 @@ class NotificationsFragment : Fragment() {
     ): View {
         val notificationsViewModel =
             ViewModelProvider(this).get(NotificationsViewModel::class.java)
+        val viewModel by activityViewModels<DataViewModel>()
 
         _binding = FragmentNotificationsBinding.inflate(inflater, container, false)
         val root: View = binding.root
         val changeButton = root.findViewById<Button>(R.id.changeBudgetButton)
         val budgetText = root.findViewById<TextView>(R.id.budgetTextView)
+        budgetText.text = viewModel.budget.toString()
+
         val changeBudgetEditText = root.findViewById<EditText>(R.id.changeBudgetText)
+
 
 
         changeButton.setOnClickListener{
             budgetText.text = changeBudgetEditText.text
-
+            viewModel.budget = changeBudgetEditText.text.toString().toInt()
         }
-
 
 
         val textView: TextView = binding.textNotifications
