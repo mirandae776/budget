@@ -12,7 +12,7 @@
     <!-- Create a space at the top to occupy one-quarter of the available space -->
 
     <TextView
-        android:id="@+id/textView3"
+        android:id="@+id/budgetText"
         android:layout_width="247dp"
         android:layout_height="30dp"
         android:text="YOUR BUDGET IS 500 dollars"
@@ -95,5 +95,13 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent" />
+
+    <Button
+        android:id="@+id/addButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Button"
+        app:layout_constraintBottom_toTopOf="@+id/scrollView2"
+        app:layout_constraintEnd_toEndOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

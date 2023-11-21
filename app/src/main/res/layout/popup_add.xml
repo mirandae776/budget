@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- res/layout/popup_add.xml -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <!-- Date Picker Button -->
+    <Button
+        android:id="@+id/datePickerButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Select Date"/>
+
+    <!-- Selected Date TextView -->
+    <TextView
+        android:id="@+id/selectedDateTextView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Selected Date: "
+        android:textStyle="bold"
+       /> <!-- Initially set to gone -->
+
+    <!-- Amount Input Field -->
+    <EditText
+        android:id="@+id/amountEditText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Enter Amount"
+        android:inputType="numberDecimal"/>
+
+    <!-- Add Button -->
+    <Button
+        android:id="@+id/addButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Add"/>
+
+    <!-- Cancel Button -->
+    <Button
+        android:id="@+id/cancelButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Cancel"/>
+</LinearLayout>
