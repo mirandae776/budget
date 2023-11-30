@@ -43,7 +43,7 @@
             android:text="Select a month to view spending" />
 
         <Button
-            android:id="@+id/button"
+            android:id="@+id/testDataButton"
             android:layout_marginStart="5dp"
             android:layout_marginTop="5dp"
             android:layout_marginEnd="5dp"

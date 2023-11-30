@@ -1,10 +1,13 @@
 package edu.msoe.budget_app.ui.dashboard
 
+import BudgetDatabaseHelper
+import android.content.ContentValues
 import android.graphics.Color
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
 import android.widget.TableLayout
 import android.widget.TableRow
 import android.widget.TextView
@@ -29,6 +32,7 @@ class DashboardFragment : Fragment() {
     lateinit var dateAndMoneyArray: MutableList<String>
     lateinit var tableLayout: TableLayout
     private val df = DecimalFormat("#.##")
+    private lateinit var budgetDatabaseHelper: BudgetDatabaseHelper
 
 
     fun calculateTotalValuesByMonth(data: MutableList<String>): Array<String> {
@@ -61,6 +65,8 @@ class DashboardFragment : Fragment() {
     }
 
 
+
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -76,13 +82,19 @@ class DashboardFragment : Fragment() {
 
 
 
+
         _binding = FragmentDashboardBinding.inflate(inflater, container, false)
         val root: View = binding.root
 
-       tableLayout = root.findViewById(R.id.yearTable)
+        tableLayout = root.findViewById(R.id.yearTable)
+
+        budgetDatabaseHelper = BudgetDatabaseHelper(requireContext())
+
+        val dataButton = root.findViewById<Button>(R.id.testDataButton)
+        
 
 
-        for (item in testing) {
+            for (item in testing) {
             val parts = item.split(",") // Split the string into date and money parts
             if (parts.size == 2) {
                 val date = parts[0]
@@ -145,6 +157,38 @@ class DashboardFragment : Fragment() {
         }
         return root
     }
+
+
+
+
+    private fun getTotalBudgetData(): Double {
+        val db = budgetDatabaseHelper.readableDatabase
+
+        val projection = arrayOf(BudgetDatabaseHelper.COLUMN_BUDGET)
+        val cursor = db.query(
+            BudgetDatabaseHelper.TABLE_NAME,
+            projection,
+            null,
+            null,
+            null,
+            null,
+            null
+        )
+
+        var totalBudget = 0.0
+
+        with(cursor) {
+            while (moveToNext()) {
+                val budgetValue = getDouble(getColumnIndexOrThrow(BudgetDatabaseHelper.COLUMN_BUDGET))
+                totalBudget += budgetValue
+            }
+            close()
+        }
+
+        return totalBudget
+    }
+
+
 
     override fun onDestroyView() {
         super.onDestroyView()

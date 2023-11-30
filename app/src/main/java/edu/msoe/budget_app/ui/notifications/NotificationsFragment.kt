@@ -1,5 +1,7 @@
 package edu.msoe.budget_app.ui.notifications
 
+import BudgetDatabaseHelper
+import android.content.ContentValues
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
@@ -26,6 +28,7 @@ class NotificationsFragment : Fragment() {
     // This property is only valid between onCreateView and
     // onDestroyView.
     private val binding get() = _binding!!
+    private lateinit var budgetDatabaseHelper: BudgetDatabaseHelper
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -54,18 +57,26 @@ class NotificationsFragment : Fragment() {
         needsText.text = needsAllocation;
         wantsText.text = wantsAllocation
         savingsText.text = savingsAllocation
-        println("HAI" + savingsAllocation)
         basedOnText.text = basedOn
 
-
+        budgetDatabaseHelper = BudgetDatabaseHelper(requireContext())
         val forbesLinkTextView: TextView = root.findViewById(R.id.forbesLink)
 
 
 
 
-        changeButton.setOnClickListener{
-            budgetText.text = changeBudgetEditText.text
-            viewModel.budget = changeBudgetEditText.text.toString().toInt()
+        changeButton.setOnClickListener {
+            val newBudgetValue = changeBudgetEditText.text.toString().toInt()
+            // Insert the new budget value into the database
+            insertBudgetData(newBudgetValue)
+            // Get the most recent entry from the database and store it in tbudget
+            val tbudget = getMostRecentBudgetData()
+            println("tbudget" + tbudget)
+            // Update viewModel.budget and UI with the new budget value
+            viewModel.budget = tbudget.toInt()
+            println(newBudgetValue)
+            println(viewModel.budget)
+            budgetText.text = tbudget.toString()
         }
 
 
@@ -73,6 +84,7 @@ class NotificationsFragment : Fragment() {
 //        notificationsViewModel.text.observe(viewLifecycleOwner) {
 //            textView.text = it
 //        }
+
 
         fun setUnderlinedText(textView: TextView, text: String) {
             val content = SpannableString(text)
@@ -93,6 +105,50 @@ class NotificationsFragment : Fragment() {
         }
         return root
     }
+
+    private fun insertBudgetData(budgetValue: Int) {
+        val db = budgetDatabaseHelper.writableDatabase
+
+        val values = ContentValues().apply {
+            put(BudgetDatabaseHelper.COLUMN_BUDGET, budgetValue)
+        }
+
+        println()
+
+        db.insert(BudgetDatabaseHelper.TABLE_NAME, null, values)
+        db.close()
+    }
+
+    private fun getMostRecentBudgetData(): Double {
+        val db = budgetDatabaseHelper.readableDatabase
+
+        val projection = arrayOf(BudgetDatabaseHelper.COLUMN_BUDGET)
+
+        val cursor = db.query(
+            BudgetDatabaseHelper.TABLE_NAME,
+            projection,
+            null,
+            null,
+            null,
+            null,
+            "${BudgetDatabaseHelper.COLUMN_BUDGET} DESC", // Order by COLUMN_BUDGET in descending order
+            "1" // Limit to 1 result
+        )
+
+        var mostRecentBudget = 0.0
+
+        with(cursor) {
+            if (moveToNext()) {
+                mostRecentBudget = getDouble(getColumnIndexOrThrow(BudgetDatabaseHelper.COLUMN_BUDGET))
+            }
+            close()
+        }
+
+        return mostRecentBudget
+    }
+
+
+
 
     override fun onDestroyView() {
         super.onDestroyView()
