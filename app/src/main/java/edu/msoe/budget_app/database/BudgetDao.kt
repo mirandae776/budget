@@ -19,6 +19,9 @@ interface BudgetDao {
     @Query("Delete FROM budgetDetail")
     fun deleteBudgetDetails()
 
+    @Query("SELECT * FROM budgetDetail LIMIT 1")
+    fun getBudget(): BudgetDetail?
+
     @Query("DELETE FROM budgetDetail WHERE id=(:id)")
     fun deleteThisClass(id: UUID)
 

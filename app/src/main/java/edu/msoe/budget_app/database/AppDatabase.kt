@@ -6,7 +6,7 @@ import androidx.room.TypeConverters
 import edu.msoe.budget_app.entities.BudgetDetail
 import edu.msoe.budget_app.entities.Converter
 
-@Database(entities = [BudgetDetail::class], version = 1)
+@Database(entities = [BudgetDetail::class], version = 2)
 @TypeConverters(Converter::class)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun budgetDao(): BudgetDao

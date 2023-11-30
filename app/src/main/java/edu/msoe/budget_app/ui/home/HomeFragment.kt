@@ -3,6 +3,7 @@ package edu.msoe.budget_app.ui.home
 import android.app.AlertDialog
 import android.app.DatePickerDialog
 import android.app.Dialog
+import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -18,13 +19,22 @@ import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import edu.msoe.budget_app.DataViewModel
+import edu.msoe.budget_app.MainActivity
+import edu.msoe.budget_app.MainActivity.Companion.budgetRepository
 import edu.msoe.budget_app.R
 import edu.msoe.budget_app.databinding.FragmentHomeBinding
+import edu.msoe.budget_app.entities.BudgetDetail
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.text.DecimalFormat
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
+import java.util.UUID
 
 
 class HomeFragment : Fragment() {
@@ -38,7 +48,7 @@ class HomeFragment : Fragment() {
     lateinit var dateAndMoneyArray: Array<String>
     private lateinit var root: View
     private lateinit var selectedDateTextView: TextView
-
+    private lateinit var budgetDetails: List<BudgetDetail>
 
 
 
@@ -136,7 +146,13 @@ class HomeFragment : Fragment() {
         addButton.setOnClickListener {
             showAddPopup()
         }
-        recreateTable()
+        lifecycleScope.launch {
+            viewModel.budgetDetails.collect { newBudgetDetails ->
+                // Update UI with the new budget details
+                budgetDetails = newBudgetDetails
+                recreateTable()
+            }
+        }
 //        val totalView = root.findViewById<TextView>(R.id.totalText)
 //        totalView.text =  "Total Spending is: " + df.format(total) + " dollars"
         val currentMonthText = root.findViewById<TextView>(R.id.currentMonthText)
@@ -204,6 +220,21 @@ class HomeFragment : Fragment() {
             // Add the new entry to the data array
             viewModel.data.add("$formattedDate,$amount")
 
+            val amountDouble = amount.toDouble()
+            val budgetDetail = BudgetDetail(
+                id = UUID.randomUUID(),
+                amountSpent = amountDouble,
+                date = SimpleDateFormat("yyyy-MM-dd").parse(formattedDate) ?: Date()
+            )
+
+            // Add the BudgetDetail object to the budget database
+           CoroutineScope(Dispatchers.Main).launch {
+                withContext(Dispatchers.IO) {
+                    budgetRepository.addBudgetDetail(budgetDetail)
+                    Log.d("BudgetApp", "Initial budget added: $budgetDetail")
+                }
+            }
+
             // Dismiss the popup
             alertDialog.dismiss()
 
@@ -239,7 +270,7 @@ class HomeFragment : Fragment() {
         val budget = activityViewModels<DataViewModel>().value.budget.toDouble()
 
         // Re-create the table with the updated data
-        for (item in testing) {
+        /*for (item in testing) {
             val parts = item.split(",") // Split the string into date and money parts
             if (parts.size == 2) {
                 val date = parts[0]
@@ -249,6 +280,7 @@ class HomeFragment : Fragment() {
 
                 val dateTextView = TextView(root.context) // Create a TextView for the date
                 dateTextView.text = date
+                dateTextView.setTextColor(Color.WHITE)
 
                 val dateLayoutParams = TableRow.LayoutParams(
                     TableRow.LayoutParams.WRAP_CONTENT,
@@ -262,6 +294,7 @@ class HomeFragment : Fragment() {
                 val moneySpentTextView = TextView(root.context) // Create a TextView for the money spent
                 val formattedMoneySpent = df.format(moneySpent.toDouble())
                 moneySpentTextView.text = formattedMoneySpent
+                moneySpentTextView.setTextColor(Color.WHITE)
 
                 val moneySpentLayoutParams = TableRow.LayoutParams(
                     TableRow.LayoutParams.WRAP_CONTENT,
@@ -281,7 +314,36 @@ class HomeFragment : Fragment() {
                 }
 
                 tableLayout.addView(row) // Add the TableRow to the TableLayout
-            }
+            }*/
+
+        for (item in budgetDetails) {
+            val row = TableRow(root.context)
+
+            val dateTextView = TextView(root.context)
+            dateTextView.text = item.date.toString() // Update with the actual date property
+            dateTextView.setTextColor(Color.WHITE)
+
+            val dateLayoutParams = TableRow.LayoutParams(
+                TableRow.LayoutParams.WRAP_CONTENT,
+                TableRow.LayoutParams.WRAP_CONTENT
+            )
+            dateLayoutParams.weight = 1f
+            dateTextView.layoutParams = dateLayoutParams
+
+            row.addView(dateTextView)
+
+            val moneySpentTextView = TextView(root.context)
+            moneySpentTextView.text = df.format(item.amountSpent)
+            moneySpentTextView.setTextColor(Color.WHITE)
+
+            val moneySpentLayoutParams = TableRow.LayoutParams(
+                TableRow.LayoutParams.WRAP_CONTENT,
+                TableRow.LayoutParams.WRAP_CONTENT
+            )
+            moneySpentLayoutParams.weight = 1f
+            moneySpentTextView.layoutParams = moneySpentLayoutParams
+
+            row.addView(moneySpentTextView)
             val blankView = TextView(root.context)
             blankView.text = ""
             val blankRow = TableRow(root.context)

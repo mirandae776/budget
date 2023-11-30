@@ -3,6 +3,7 @@
     <string name="title_home">Home</string>
     <string name="title_dashboard">Yearly</string>
     <string name="title_notifications">Budget</string>
+    <string name="add_payment">Add Payment</string>
     <string name="needs_allocation">%s dollars for anything you need</string>
     <string name="wants_allocation">%s dollars for anything you want</string>
     <string name="savings_allocation">%s dollars to savings</string>

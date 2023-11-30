@@ -1,5 +1,6 @@
 package edu.msoe.budget_app.ui.dashboard
 
+import android.graphics.Color
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -92,6 +93,7 @@ class DashboardFragment : Fragment() {
 
                 val dateTextView = TextView(root.context) // Create a TextView for the date
                 dateTextView.text = date
+                dateTextView.setTextColor(Color.WHITE)
 
                 val dateLayoutParams = TableRow.LayoutParams(
                     TableRow.LayoutParams.WRAP_CONTENT,
@@ -104,6 +106,7 @@ class DashboardFragment : Fragment() {
 
                 val moneySpentTextView = TextView(root.context) // Create a TextView for the money spent
                 moneySpentTextView.text = df.format(moneySpent.toDouble())
+                moneySpentTextView.setTextColor(Color.WHITE)
 
                 val moneySpentLayoutParams = TableRow.LayoutParams(
                     TableRow.LayoutParams.WRAP_CONTENT,

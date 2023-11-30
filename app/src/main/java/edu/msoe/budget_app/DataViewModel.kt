@@ -1,6 +1,10 @@
 package edu.msoe.budget_app
 
 import androidx.lifecycle.ViewModel
+import edu.msoe.budget_app.entities.BudgetDetail
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+
 //This wil be used when developing locally, data will be stored here.
 //In the final project everything should be database calls
 
@@ -33,4 +37,19 @@ class DataViewModel: ViewModel() {
     )
     var selectedMonth = "NOVEMBER"
     var budget = 5000;
+
+    private val _budgetDetails = MutableStateFlow<List<BudgetDetail>>(emptyList())
+    val budgetDetails: Flow<List<BudgetDetail>> = _budgetDetails
+
+    // Coroutine function to add a budget detail
+    fun addBudgetDetail(budgetDetail: BudgetDetail) {
+        // Get the current list of budget details
+        val currentList = _budgetDetails.value ?: emptyList()
+
+        // Create a new list with the added budget detail
+        val newList = currentList + budgetDetail
+
+        // Update the MutableLiveData
+        _budgetDetails.value = newList
+    }
 }

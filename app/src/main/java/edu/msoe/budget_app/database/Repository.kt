@@ -29,4 +29,8 @@ class Repository(private val budgetDao: BudgetDao) {
     fun updateBudgetDetail(budgetDetail: BudgetDetail) {
         budgetDao.updateBudgetDetail(budgetDetail)
     }
+
+    suspend fun getBudget(): BudgetDetail? {
+        return budgetDao.getBudget()
+    }
 }
