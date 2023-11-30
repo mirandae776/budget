@@ -31,12 +31,14 @@
         android:id="@+id/currentMonthText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginStart="5dp"
+        android:layout_marginTop="10dp"
         android:padding="5dp"
         android:text="ICC Ranking of Players:"
         android:textSize="20sp"
         android:textStyle="bold"
-        tools:layout_editor_absoluteX="5dp"
-        tools:layout_editor_absoluteY="10dp">
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
 
     </TextView>
 
