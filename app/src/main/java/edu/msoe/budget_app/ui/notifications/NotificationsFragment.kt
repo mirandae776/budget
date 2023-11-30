@@ -44,7 +44,6 @@ class NotificationsFragment : Fragment() {
         val wantsText = root.findViewById<TextView>(R.id.wantsTextView)
         val savingsText = root.findViewById<TextView>(R.id.savingsTextView)
         val basedOnText = root.findViewById<TextView>(R.id.basedOnText)
-        val infoTextView = root.findViewById<TextView>(R.id.infoTextView)
         budgetText.text = viewModel.budget.toString()
 
         val changeBudgetEditText = root.findViewById<EditText>(R.id.changeBudgetText)
@@ -57,12 +56,7 @@ class NotificationsFragment : Fragment() {
         savingsText.text = savingsAllocation
         println("HAI" + savingsAllocation)
         basedOnText.text = basedOn
-        val infoText = "This budget split is called the 50/30/20 rule\n " +
-                "a popular split where 50% of your budget goes to your needs\n" +
-                "30% goes to your wants,\n" +
-                "and 20% goes to savings\n" +
-                "for more info;"
-        infoTextView.text =  infoText
+
 
         val forbesLinkTextView: TextView = root.findViewById(R.id.forbesLink)
 
@@ -93,7 +87,7 @@ class NotificationsFragment : Fragment() {
             startActivity(browserIntent)
         }
 
-        setUnderlinedText(forbesLinkTextView, "Click Here")
+        setUnderlinedText(forbesLinkTextView, "More info on Budget Split")
         forbesLinkTextView.setOnClickListener {
             openForbesLink(it)
         }

@@ -52,20 +52,6 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
-        android:id="@+id/forbesLink"
-        android:layout_width="0dp"
-        android:layout_height="25dp"
-        android:layout_marginEnd="184dp"
-        android:layout_marginBottom="260dp"
-        android:autoLink="web"
-        android:onClick="openForbesLink"
-        android:text="Click Here"
-        android:textColor="@android:color/holo_blue_dark"
-        android:textSize="20sp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
-
-    <TextView
         android:id="@+id/basedOnText"
         android:layout_width="342dp"
         android:layout_height="26dp"
@@ -108,21 +94,24 @@
         android:layout_height="23dp"
         android:layout_marginStart="20dp"
         android:layout_marginTop="15dp"
-        android:layout_marginBottom="22dp"
-        app:layout_constraintBottom_toTopOf="@+id/infoTextView"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/wantsTextView" />
 
     <TextView
-        android:id="@+id/infoTextView"
-        android:layout_width="238dp"
-        android:layout_height="134dp"
-        android:layout_marginStart="20dp"
-        android:layout_marginBottom="260dp"
-        android:text="TextView"
-        android:textSize="16sp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        android:id="@+id/forbesLink"
+        android:layout_width="235dp"
+        android:layout_height="25dp"
+        android:layout_marginStart="67dp"
+        android:layout_marginTop="4dp"
+        android:layout_marginEnd="109dp"
+        android:autoLink="web"
+        android:onClick="openForbesLink"
+        android:text="More Info On Budget Split"
+        android:textColor="@android:color/holo_blue_dark"
+        android:textSize="20sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
