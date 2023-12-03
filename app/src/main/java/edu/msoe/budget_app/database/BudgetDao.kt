@@ -4,30 +4,30 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Update
-import edu.msoe.budget_app.entities.BudgetDetail
+import edu.msoe.budget_app.entities.SpendingDetail
 import kotlinx.coroutines.flow.Flow
 import java.util.UUID
 
 @Dao
 interface BudgetDao {
-    @Query("SELECT * FROM budgetDetail")
-    fun getBudgetDetails(): Flow<List<BudgetDetail>>
+    @Query("SELECT * FROM spendingDetail")
+    fun getSpendingDetails(): Flow<List<SpendingDetail>>
 
-    @Query("SELECT * FROM budgetDetail WHERE id=(:id)")
-    fun getBudgetDetail(id: UUID): BudgetDetail
+    @Query("SELECT * FROM spendingDetail WHERE id=(:id)")
+    fun getSpendingDetail(id: UUID): SpendingDetail
 
-    @Query("Delete FROM budgetDetail")
-    fun deleteBudgetDetails()
+    @Query("Delete FROM spendingDetail")
+    fun deleteSpendingDetails()
 
-    @Query("SELECT * FROM budgetDetail LIMIT 1")
-    fun getBudget(): BudgetDetail?
+    @Query("SELECT * FROM spendingDetail LIMIT 1")
+    fun getSpendingDetail(): SpendingDetail?
 
-    @Query("DELETE FROM budgetDetail WHERE id=(:id)")
+    @Query("DELETE FROM spendingDetail WHERE id=(:id)")
     fun deleteThisClass(id: UUID)
 
     @Insert
-    fun addBudgetDetail(budgetDetail: BudgetDetail)
+    fun addSpendingDetail(spendingDetail: SpendingDetail)
 
     @Update
-    fun updateBudgetDetail(budgetDetail: BudgetDetail)
+    fun updateSpendingDetail(spendingDetail: SpendingDetail)
 }

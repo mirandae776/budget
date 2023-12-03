@@ -1,6 +1,6 @@
 package edu.msoe.budget_app.ui.dashboard
 
-import BudgetDatabaseHelper
+import edu.msoe.budget_app.database.BudgetDatabaseHelper
 import android.content.ContentValues
 import android.graphics.Color
 import android.os.Bundle
@@ -76,8 +76,8 @@ class DashboardFragment : Fragment() {
             ViewModelProvider(this).get(DashboardViewModel::class.java)
         //var viewModel: DataViewModel = ViewModelProvider(this).get(DataViewModel::class.java)
         val viewModel by activityViewModels<DataViewModel>()
-        dateAndMoneyArray = viewModel.data
-        val testing = calculateTotalValuesByMonth(dateAndMoneyArray)
+        //dateAndMoneyArray = context?.let { viewModel.getSpendingDetails(it) }
+        //val testing = calculateTotalValuesByMonth(dateAndMoneyArray)
 
 
 
@@ -91,20 +91,18 @@ class DashboardFragment : Fragment() {
         budgetDatabaseHelper = BudgetDatabaseHelper(requireContext())
 
         val dataButton = root.findViewById<Button>(R.id.testDataButton)
-        
+        var spendingDetails = context?.let { viewModel.getSpendingDetails(it) }
 
 
-            for (item in testing) {
-            val parts = item.split(",") // Split the string into date and money parts
-            if (parts.size == 2) {
-                val date = parts[0]
-                val moneySpent = parts[1]
+        if (spendingDetails != null) {
+            for (item in spendingDetails) {
+
 
                 val row = TableRow(root.context) // Create a new TableRow
 
 
                 val dateTextView = TextView(root.context) // Create a TextView for the date
-                dateTextView.text = date
+                dateTextView.text = item.date.toString()
                 dateTextView.setTextColor(Color.WHITE)
 
                 val dateLayoutParams = TableRow.LayoutParams(
@@ -117,7 +115,7 @@ class DashboardFragment : Fragment() {
                 row.addView(dateTextView)
 
                 val moneySpentTextView = TextView(root.context) // Create a TextView for the money spent
-                moneySpentTextView.text = df.format(moneySpent.toDouble())
+                moneySpentTextView.text = df.format(item.amountSpent)
                 moneySpentTextView.setTextColor(Color.WHITE)
 
                 val moneySpentLayoutParams = TableRow.LayoutParams(
@@ -149,6 +147,7 @@ class DashboardFragment : Fragment() {
             val blankRow = TableRow(root.context)
             blankRow.addView(blankView)
             tableLayout.addView(blankRow)
+
         }
 
         val textView: TextView = binding.textDashboard

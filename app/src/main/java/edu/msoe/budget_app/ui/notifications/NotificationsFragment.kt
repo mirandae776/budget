@@ -1,6 +1,6 @@
 package edu.msoe.budget_app.ui.notifications
 
-import BudgetDatabaseHelper
+import edu.msoe.budget_app.database.BudgetDatabaseHelper
 import android.content.ContentValues
 import android.content.Intent
 import android.net.Uri
@@ -14,6 +14,7 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.ViewModelProvider
@@ -47,13 +48,14 @@ class NotificationsFragment : Fragment() {
         val wantsText = root.findViewById<TextView>(R.id.wantsTextView)
         val savingsText = root.findViewById<TextView>(R.id.savingsTextView)
         val basedOnText = root.findViewById<TextView>(R.id.basedOnText)
-        budgetText.text = viewModel.budget.toString()
+        var budget = viewModel.getBudget()
+        budgetText.text = budget.toString()
 
         val changeBudgetEditText = root.findViewById<EditText>(R.id.changeBudgetText)
-        val needsAllocation = getString(R.string.needs_allocation, (viewModel.budget * 0.50).toString())
-        val wantsAllocation = getString(R.string.wants_allocation, (viewModel.budget * 0.30).toString())
-        val savingsAllocation = getString(R.string.savings_allocation, (viewModel.budget * 0.20).toString())
-        val basedOn = getString(R.string.basedOn, viewModel.budget)
+        val needsAllocation = getString(R.string.needs_allocation, (budget * 0.50).toString())
+        val wantsAllocation = getString(R.string.wants_allocation, (budget * 0.30).toString())
+        val savingsAllocation = getString(R.string.savings_allocation, (budget * 0.20).toString())
+        val basedOn = getString(R.string.basedOn, budget)
         needsText.text = needsAllocation;
         wantsText.text = wantsAllocation
         savingsText.text = savingsAllocation
@@ -66,17 +68,29 @@ class NotificationsFragment : Fragment() {
 
 
         changeButton.setOnClickListener {
-            val newBudgetValue = changeBudgetEditText.text.toString().toInt()
-            // Insert the new budget value into the database
-            insertBudgetData(newBudgetValue)
-            // Get the most recent entry from the database and store it in tbudget
-            val tbudget = getMostRecentBudgetData()
-            println("tbudget" + tbudget)
-            // Update viewModel.budget and UI with the new budget value
-            viewModel.budget = tbudget.toInt()
-            println(newBudgetValue)
-            println(viewModel.budget)
-            budgetText.text = tbudget.toString()
+            val newBudgetValueString = changeBudgetEditText.text.toString()
+
+            // Validate if the entered value is a valid integer
+            if (newBudgetValueString.isNotEmpty() && newBudgetValueString.matches(Regex("-?\\d+"))) {
+                val newBudgetValue = newBudgetValueString.toInt()
+
+                // Insert the new budget value into the database
+                insertBudgetData(newBudgetValue)
+
+                // Get the most recent entry from the database and store it in tbudget
+                val tbudget = getMostRecentBudgetData()
+
+                // Update viewModel.budget and UI with the new budget value
+                budget = tbudget.toInt()
+                budgetText.text = tbudget.toString()
+            } else {
+                // Show a toast message for an invalid budget value
+                Toast.makeText(
+                    context,
+                    "Invalid budget value entered. Please enter a valid number.",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
         }
 
 
