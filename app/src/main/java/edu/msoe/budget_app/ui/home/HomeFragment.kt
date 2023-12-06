@@ -37,6 +37,7 @@ import java.text.DecimalFormat
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
+import java.util.Locale
 import java.util.UUID
 
 
@@ -114,6 +115,14 @@ class HomeFragment : Fragment() {
     ): View {
         //var viewModel: DataViewModel = ViewModelProvider(this).get(DataViewModel::class.java)
         val viewModel by activityViewModels<DataViewModel>()
+        var spendingEntries = viewModel.getSpendingDetails(this.requireContext())
+        for(i in spendingEntries){
+            println(spendingEntries)
+        }
+        val currentMonth = Calendar.getInstance().get(Calendar.MONTH) + 1
+        val currentMonthString = currentMonth.toString()
+
+
 
 
 
@@ -131,8 +140,8 @@ class HomeFragment : Fragment() {
         // date format in it.
         val currentDate = sdf.format(Date())
         var dateParts = currentDate.split("-")
-        val currentMonth = dateParts[0]
-        val currentMonthName = viewModel.selectedMonth
+//        val currentMonth = dateParts[0]
+//        val currentMonthName = viewModel.selectedMonth
 
 
 //        val homeViewModel =
@@ -143,17 +152,19 @@ class HomeFragment : Fragment() {
 
 
         val tableLayout = root.findViewById<TableLayout>(R.id.tableLayout) // Assuming you have a TableLayout in your layout file with the ID 'tableLayout'
+
         val addButton = root.findViewById<Button>(R.id.addButton)
         addButton.setOnClickListener {
-            showAddPopup()
+            showAddPopup(spendingEntries)
         }
+        updateUI(viewModel)
 
 
 
         viewModel.spendingDetails.observe(viewLifecycleOwner) { spendingDetails ->
             if (spendingDetails.isNotEmpty()) {
-                recreateTable(viewModel)
-                updateUI(spendingDetails, tableLayout)
+                println("IS THIS CALLED")
+                updateUI(viewModel)
             }
         }
 
@@ -161,7 +172,7 @@ class HomeFragment : Fragment() {
 //        val totalView = root.findViewById<TextView>(R.id.totalText)
 //        totalView.text =  "Total Spending is: " + df.format(total) + " dollars"
         val currentMonthText = root.findViewById<TextView>(R.id.currentMonthText)
-        currentMonthText.text = "Current Spending For: $currentMonthName"
+        //currentMonthText.text = "Current Spending For: $currentMonthName"
 
         val budgetText = root.findViewById<TextView>(R.id.budgetText)
         val budget = viewModel.getBudget()
@@ -175,50 +186,104 @@ class HomeFragment : Fragment() {
         return root
     }
 
-    private fun updateUI(spendingDetails: List<SpendingDetail>, tableLayout: TableLayout) {
+    private fun updateUI(viewModel: DataViewModel) {
+        val spendingDetails = viewModel.getSpendingDetails(requireContext())
+        // Clear all views from the table
+
+        val tableLayout = root.findViewById<TableLayout>(R.id.tableLayout)
+        tableLayout.removeAllViews()
+
+        var total = 0.0 // Declare the total variable here
+        val budget = viewModel.getBudget()
+
+        // Add header row
+        val headerRow = TableRow(requireContext())
+
+        val headerDateTextView = TextView(requireContext())
+        headerDateTextView.text = "Date"
+        headerDateTextView.setTextColor(Color.WHITE)
+        headerDateTextView.layoutParams = getTableRowLayoutParams()
+        headerRow.addView(headerDateTextView)
+
+        val headerAmountSpentTextView = TextView(requireContext())
+        headerAmountSpentTextView.text = "Amount Spent"
+        headerAmountSpentTextView.setTextColor(Color.WHITE)
+        headerAmountSpentTextView.layoutParams = getTableRowLayoutParams()
+        headerRow.addView(headerAmountSpentTextView)
+
+        tableLayout.addView(headerRow)
+
+        val currentMonth = Calendar.getInstance().get(Calendar.MONTH) + 1
+
         for (item in spendingDetails) {
-            val row = TableRow(requireContext())
+            val calendar = Calendar.getInstance()
+            calendar.time = item.date
+            val spendingDetailMonth = calendar.get(Calendar.MONTH) + 1
 
-            val dateTextView = TextView(requireContext())
-            dateTextView.text = item.date.toString()
-            dateTextView.setTextColor(Color.WHITE)
+            if (spendingDetailMonth == currentMonth) {
+                val date = SimpleDateFormat("MMMM d, yyyy", Locale.getDefault()).format(item.date)
+                val formattedMoneySpent = df.format(item.amountSpent)
 
-            val dateLayoutParams = TableRow.LayoutParams(
-                TableRow.LayoutParams.WRAP_CONTENT,
-                TableRow.LayoutParams.WRAP_CONTENT
-            )
-            dateLayoutParams.weight = 1f
-            dateTextView.layoutParams = dateLayoutParams
+                val row = TableRow(root.context) // Create a new TableRow
 
-            row.addView(dateTextView)
+                val dateTextView = TextView(root.context) // Create a TextView for the date
+                dateTextView.text = date
+                dateTextView.setTextColor(Color.WHITE) // Set text color to white
+                dateTextView.layoutParams = getTableRowLayoutParams()
 
-            val moneySpentTextView = TextView(requireContext())
-            moneySpentTextView.text = df.format(item.amountSpent)
-            moneySpentTextView.setTextColor(Color.WHITE)
+                row.addView(dateTextView)
 
-            val moneySpentLayoutParams = TableRow.LayoutParams(
-                TableRow.LayoutParams.WRAP_CONTENT,
-                TableRow.LayoutParams.WRAP_CONTENT
-            )
-            moneySpentLayoutParams.weight = 1f
-            moneySpentTextView.layoutParams = moneySpentLayoutParams
+                val moneySpentTextView = TextView(root.context) // Create a TextView for the money spent
+                moneySpentTextView.text = formattedMoneySpent
+                moneySpentTextView.setTextColor(Color.WHITE) // Set text color to white
+                moneySpentTextView.layoutParams = getTableRowLayoutParams()
 
-            row.addView(moneySpentTextView)
-            val blankView = TextView(requireContext())
-            blankView.text = ""
-            val blankRow = TableRow(requireContext())
-            blankRow.addView(blankView)
-            tableLayout.addView(blankRow)
+                row.addView(moneySpentTextView) // Add the money spent TextView to the TableRow
+
+                // Update the total with the formattedMoneySpent value
+                total += item.amountSpent
+
+                // Check if the total exceeds the budget and highlight the row if needed
+                if (total > budget) {
+                    row.setBackgroundColor(root.resources.getColor(android.R.color.holo_red_light))
+                }
+
+                tableLayout.addView(row) // Add the TableRow to the TableLayout
+
+                val blankView = TextView(root.context)
+                blankView.text = ""
+                blankView.layoutParams = getTableRowLayoutParams()
+                val blankRow = TableRow(root.context)
+                blankRow.addView(blankView)
+                tableLayout.addView(blankRow)
+            }
+        }
+        val totalText = root.findViewById<TextView>(R.id.totalText)
+        totalText.text = "Total Spending is: $total"
+    }
+
+    // Helper function to get TableRow.LayoutParams with equal weight
+    private fun getTableRowLayoutParams(): TableRow.LayoutParams {
+        return TableRow.LayoutParams(
+            0,
+            TableRow.LayoutParams.WRAP_CONTENT
+        ).apply {
+            weight = 1f
         }
     }
 
 
-    private fun showAddPopup() {
+
+
+
+
+
+    private fun showAddPopup(spendingDetails: List<SpendingDetail>) {
         val builder = AlertDialog.Builder(requireContext())
         val inflater = layoutInflater
         val dialogView = inflater.inflate(R.layout.popup_add, null)
         builder.setView(dialogView)
-
+        val tableLayout = root.findViewById<TableLayout>(R.id.tableLayout)
         selectedDateTextView = dialogView.findViewById(R.id.selectedDateTextView)
 
         // Set the initial value of selectedDateTextView to the current date
@@ -277,7 +342,9 @@ class HomeFragment : Fragment() {
             alertDialog.dismiss()
 
             // Recreate the table with updated data
-            recreateTable(viewModel)
+            //recreateTable(viewModel, spendingDetails)
+
+            updateUI(viewModel)
 
 
             cancelButton.setOnClickListener {
@@ -302,102 +369,79 @@ class HomeFragment : Fragment() {
     }
 
 
-    private fun recreateTable(viewModel: DataViewModel) {
-        // Clear existing views from the table
-        println("CALLED")
+    private fun recreateTable(viewModel: DataViewModel, spendingDetails: List<SpendingDetail>) {
         val tableLayout = root.findViewById<TableLayout>(R.id.tableLayout)
         tableLayout.removeAllViews()
 
-        // Get the updated data
-        val testing = viewModel.getSpendingDetails(root.context)
-
         var total = 0.0 // Declare the total variable here
+        val budget = viewModel.getBudget()
+        val spend = viewModel.getSpendingDetails(requireContext())
 
-        // Get the budget from the ViewModel
-        val budget = activityViewModels<DataViewModel>().value.getBudget()
 
-        // Re-create the table with the updated data
-        for (spendingDetail in testing) {
-            val row = TableRow(root.context) // Create a new TableRow
 
-            val dateTextView = TextView(root.context) // Create a TextView for the date
-            dateTextView.text = SimpleDateFormat("yyyy-MM-dd").format(spendingDetail.date)
-            dateTextView.setTextColor(Color.WHITE)
+        // Add header row
+        val headerRow = TableRow(requireContext())
 
-            val dateLayoutParams = TableRow.LayoutParams(
-                TableRow.LayoutParams.WRAP_CONTENT,
-                TableRow.LayoutParams.WRAP_CONTENT
-            )
-            dateLayoutParams.weight = 1f // Set the layout weight to 1
-            dateTextView.layoutParams = dateLayoutParams
+        val headerDateTextView = TextView(requireContext())
+        headerDateTextView.text = "Date"
+        headerDateTextView.setTextColor(Color.WHITE)
+        headerDateTextView.layoutParams = getTableRowLayoutParams()
+        headerRow.addView(headerDateTextView)
 
-            row.addView(dateTextView)
+        val headerAmountSpentTextView = TextView(requireContext())
+        headerAmountSpentTextView.text = "Amount Spent"
+        headerAmountSpentTextView.setTextColor(Color.WHITE)
+        headerAmountSpentTextView.layoutParams = getTableRowLayoutParams()
+        headerRow.addView(headerAmountSpentTextView)
 
-            val moneySpentTextView =
-                TextView(root.context) // Create a TextView for the money spent
-            val formattedMoneySpent = df.format(spendingDetail.amountSpent)
-            moneySpentTextView.text = formattedMoneySpent
-            moneySpentTextView.setTextColor(Color.WHITE)
+        tableLayout.addView(headerRow)
 
-            val moneySpentLayoutParams = TableRow.LayoutParams(
-                TableRow.LayoutParams.WRAP_CONTENT,
-                TableRow.LayoutParams.WRAP_CONTENT
-            )
-            moneySpentLayoutParams.weight = 1f // Set the layout weight to 1
-            moneySpentTextView.layoutParams = moneySpentLayoutParams
+        val currentMonth = Calendar.getInstance().get(Calendar.MONTH) + 1
 
-            row.addView(moneySpentTextView) // Add the money spent TextView to the TableRow
+        for (item in spend) {
+                val calendar = Calendar.getInstance()
+                calendar.time = item.date
+                val spendingDetailMonth = calendar.get(Calendar.MONTH) + 1
 
-            // Update the total with the formattedMoneySpent value
-            total += spendingDetail.amountSpent
+                if (spendingDetailMonth == currentMonth) {
+                    val date = SimpleDateFormat("MMMM d, yyyy", Locale.getDefault()).format(item.date)
+                    val formattedMoneySpent = df.format(item.amountSpent)
 
-            // Check if the total exceeds the budget and highlight the row if needed
-            if (total > budget) {
-                row.setBackgroundColor(root.resources.getColor(android.R.color.holo_red_light))
+                    val row = TableRow(root.context) // Create a new TableRow
+
+                    val dateTextView = TextView(root.context) // Create a TextView for the date
+                    dateTextView.text = date
+                    dateTextView.setTextColor(Color.WHITE) // Set text color to white
+                    dateTextView.layoutParams = getTableRowLayoutParams()
+
+                    row.addView(dateTextView)
+
+                    val moneySpentTextView = TextView(root.context) // Create a TextView for the money spent
+                    moneySpentTextView.text = formattedMoneySpent
+                    moneySpentTextView.setTextColor(Color.WHITE) // Set text color to white
+                    moneySpentTextView.layoutParams = getTableRowLayoutParams()
+
+                    row.addView(moneySpentTextView) // Add the money spent TextView to the TableRow
+
+                    // Update the total with the formattedMoneySpent value
+                    total += item.amountSpent
+
+                    // Check if the total exceeds the budget and highlight the row if needed
+                    if (total > budget) {
+                        row.setBackgroundColor(root.resources.getColor(android.R.color.holo_red_light))
+                    }
+
+                    tableLayout.addView(row) // Add the TableRow to the TableLayout
+
+                    val blankView = TextView(root.context)
+                    blankView.text = ""
+                    blankView.layoutParams = getTableRowLayoutParams()
+                    val blankRow = TableRow(root.context)
+                    blankRow.addView(blankView)
+                    tableLayout.addView(blankRow)
+                }
             }
 
-            tableLayout.addView(row) // Add the TableRow to the TableLayout
-        }
-
-        /*for (item in SpendingDetails) {
-            val row = TableRow(root.context)
-
-            val dateTextView = TextView(root.context)
-            dateTextView.text = item.date.toString() // Update with the actual date property
-            dateTextView.setTextColor(Color.WHITE)
-
-            val dateLayoutParams = TableRow.LayoutParams(
-                TableRow.LayoutParams.WRAP_CONTENT,
-                TableRow.LayoutParams.WRAP_CONTENT
-            )
-            dateLayoutParams.weight = 1f
-            dateTextView.layoutParams = dateLayoutParams
-
-            row.addView(dateTextView)
-
-            val moneySpentTextView = TextView(root.context)
-            moneySpentTextView.text = df.format(item.amountSpent)
-            moneySpentTextView.setTextColor(Color.WHITE)
-
-            val moneySpentLayoutParams = TableRow.LayoutParams(
-                TableRow.LayoutParams.WRAP_CONTENT,
-                TableRow.LayoutParams.WRAP_CONTENT
-            )
-            moneySpentLayoutParams.weight = 1f
-            moneySpentTextView.layoutParams = moneySpentLayoutParams
-
-            row.addView(moneySpentTextView)
-            val blankView = TextView(root.context)
-            blankView.text = ""
-            val blankRow = TableRow(root.context)
-            blankRow.addView(blankView)
-            tableLayout.addView(blankRow)
-        }*/
-
-        // Update the totalView
-        val totalView = root.findViewById<TextView>(R.id.totalText)
-        println(total)
-        totalView.text = "Total Spending is: " + df.format(total) + " dollars"
     }
 
 

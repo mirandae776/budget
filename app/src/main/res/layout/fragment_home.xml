@@ -76,22 +76,12 @@
 
             <!-- Add your TableRows with data here -->
             <TableRow
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
                 android:background="#51B435"
                 android:padding="10dp">
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="Date"
-                    android:textColor="#FFFFFF" />
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="Amount Spent"
-                    android:textColor="#FFFFFF" />
 
 
             </TableRow>
