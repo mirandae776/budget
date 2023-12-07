@@ -77,7 +77,9 @@ class DataViewModel(application: Application) : AndroidViewModel(application) {
         }
 
         cursor.close()
-
+        for(i in spendingDetails){
+            print("i = " + i)
+        }
         return spendingDetails
     }
 
@@ -120,7 +122,7 @@ class DataViewModel(application: Application) : AndroidViewModel(application) {
 
     private fun getFormattedCurrentMonth(): String {
         val calendar = Calendar.getInstance()
-        val dateFormat = SimpleDateFormat("MMMM", Locale.US)
+        val dateFormat = SimpleDateFormat("MMMM yyyy", Locale.US)
         return dateFormat.format(calendar.time)
     }
 }

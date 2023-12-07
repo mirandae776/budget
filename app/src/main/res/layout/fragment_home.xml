@@ -108,19 +108,18 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp">
 
+
+            <!-- Add your TableRows with data here -->
             <TableRow
                 android:id="@+id/tableRow"
-                android:layout_width="350dp"
-                android:layout_marginTop="20dp"
-                app:layout_constraintEnd_toEndOf="@+id/scrollView2"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="#51B435"
+                android:padding="10dp"
                 app:layout_constraintStart_toStartOf="@+id/scrollView2"
-                app:layout_constraintTop_toBottomOf="@+id/budgetText">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:textColor="#FFFFFF" />
+                app:layout_constraintTop_toBottomOf="@+id/budgetText"
+                app:layout_constraintEnd_toEndOf="@+id/scrollView2"
+                >
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -157,6 +156,7 @@
         android:id="@+id/addButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
         android:text="Add Payment"
         android:background="#999999"
         app:layout_constraintEnd_toEndOf="@+id/scrollView2"
