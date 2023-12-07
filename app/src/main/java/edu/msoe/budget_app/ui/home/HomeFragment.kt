@@ -123,12 +123,7 @@ class HomeFragment : Fragment() {
         val currentMonthString = currentMonth.toString()
 
 
-
-
-
         //val testing = getLinesForMonth(viewModel.data,monthNameToNumber(viewModel.selectedMonth))
-
-
 
         //dateAndMoneyArray = testing.toTypedArray()
         // on below line we are creating and initializing
@@ -149,7 +144,6 @@ class HomeFragment : Fragment() {
 
         _binding = FragmentHomeBinding.inflate(inflater, container, false)
         root = binding.root
-
 
         val tableLayout = root.findViewById<TableLayout>(R.id.tableLayout) // Assuming you have a TableLayout in your layout file with the ID 'tableLayout'
 
@@ -213,14 +207,14 @@ class HomeFragment : Fragment() {
 
         tableLayout.addView(headerRow)
 
-        val currentMonth = Calendar.getInstance().get(Calendar.MONTH) + 1
+        val selectedMonth = viewModel.selectedMonth
 
         for (item in spendingDetails) {
             val calendar = Calendar.getInstance()
             calendar.time = item.date
-            val spendingDetailMonth = calendar.get(Calendar.MONTH) + 1
+            val spendingDetailMonth = SimpleDateFormat("MMMM yyyy", Locale.getDefault()).format(item.date)
 
-            if (spendingDetailMonth == currentMonth) {
+            if (spendingDetailMonth.equals(selectedMonth, ignoreCase = true)) {
                 val date = SimpleDateFormat("MMMM d, yyyy", Locale.getDefault()).format(item.date)
                 val formattedMoneySpent = df.format(item.amountSpent)
 
@@ -261,6 +255,9 @@ class HomeFragment : Fragment() {
         val totalText = root.findViewById<TextView>(R.id.totalText)
         totalText.text = "Total Spending is: $total"
     }
+
+
+
 
     // Helper function to get TableRow.LayoutParams with equal weight
     private fun getTableRowLayoutParams(): TableRow.LayoutParams {
