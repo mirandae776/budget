@@ -32,15 +32,6 @@ class MainActivity : AppCompatActivity() {
         spendingDbHelper?.close()
         spendingDbHelper = SpendingDatabaseHelper(applicationContext)
 
-        // Perform database operations on a background thread
-        // Note: You might want to use a coroutine or AsyncTask for background operations
-        val initialSpendingDetail = SpendingDetail(
-            id = UUID.randomUUID(),
-            amountSpent = 100.0,
-            date = Date()
-        )
-        Log.d("BUDGET ADDED", "Initial budget added: $initialSpendingDetail")
-        addSpendingDetail(initialSpendingDetail)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 

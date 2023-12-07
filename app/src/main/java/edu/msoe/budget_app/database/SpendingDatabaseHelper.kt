@@ -9,13 +9,14 @@ class SpendingDatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATAB
 
     companion object {
         const val DATABASE_NAME = "spending_database"
-        const val DATABASE_VERSION = 1
+        const val DATABASE_VERSION = 2
 
         // Define your table and column names specific to spending details
         const val TABLE_NAME = "spending_detail"
         const val COLUMN_ID = "id"
         const val COLUMN_AMOUNT_SPENT = "amount_spent"
         const val COLUMN_DATE = "date"
+        const val COLUMN_DESCRIPTION = "description"
     }
 
     override fun onCreate(db: SQLiteDatabase) {
@@ -24,7 +25,8 @@ class SpendingDatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATAB
             CREATE TABLE $TABLE_NAME (
                 $COLUMN_ID TEXT PRIMARY KEY,
                 $COLUMN_AMOUNT_SPENT REAL,
-                $COLUMN_DATE TEXT
+                $COLUMN_DATE TEXT,
+                $COLUMN_DESCRIPTION TEXT
             )
         """.trimIndent()
 

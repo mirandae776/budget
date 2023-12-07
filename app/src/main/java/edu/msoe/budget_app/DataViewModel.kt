@@ -2,6 +2,7 @@ package edu.msoe.budget_app
 
 import android.app.Application
 import android.content.Context
+import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -49,7 +50,8 @@ class DataViewModel(application: Application) : AndroidViewModel(application) {
             arrayOf(
                 SpendingDatabaseHelper.COLUMN_ID,
                 SpendingDatabaseHelper.COLUMN_AMOUNT_SPENT,
-                SpendingDatabaseHelper.COLUMN_DATE
+                SpendingDatabaseHelper.COLUMN_DATE,
+                SpendingDatabaseHelper.COLUMN_DESCRIPTION
             ),
             null,
             null,
@@ -63,11 +65,12 @@ class DataViewModel(application: Application) : AndroidViewModel(application) {
             val idString = cursor.getString(cursor.getColumnIndexOrThrow(SpendingDatabaseHelper.COLUMN_ID))
             val amountSpent = cursor.getDouble(cursor.getColumnIndexOrThrow(SpendingDatabaseHelper.COLUMN_AMOUNT_SPENT))
             val dateString = cursor.getString(cursor.getColumnIndexOrThrow(SpendingDatabaseHelper.COLUMN_DATE))
-
+            val description = cursor.getString(cursor.getColumnIndexOrThrow(SpendingDatabaseHelper.COLUMN_DESCRIPTION))
+            Log.d("DATABASE DESCRIPTION TYPE", "Description from Database: $description")
             val id = UUID.fromString(idString)
             val date = convertStringToDate(dateString)
 
-            val spendingDetail = date?.let { SpendingDetail(id, amountSpent, it) }
+            val spendingDetail = date?.let { SpendingDetail(id, amountSpent, it, description) }
             if (spendingDetail != null) {
                 spendingDetails.add(spendingDetail)
             }
@@ -118,6 +121,6 @@ class DataViewModel(application: Application) : AndroidViewModel(application) {
     private fun getFormattedCurrentMonth(): String {
         val calendar = Calendar.getInstance()
         val dateFormat = SimpleDateFormat("MMMM", Locale.US)
-        return dateFormat.format(calendar.time).toUpperCase(Locale.US)
+        return dateFormat.format(calendar.time)
     }
 }

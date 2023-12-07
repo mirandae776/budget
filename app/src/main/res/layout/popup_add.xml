@@ -30,6 +30,22 @@
         android:hint="Enter Amount"
         android:inputType="numberDecimal"/>
 
+    <TextView
+        android:id="@+id/spendingTypeTextView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Spending Description: "
+        android:textStyle="bold"
+        />
+
+    <AutoCompleteTextView
+        android:id="@+id/descriptionEditText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Ex: Rent, Groceries, Internet..."
+        android:inputType="text"
+        />
+
     <!-- Add Button -->
     <Button
         android:id="@+id/addButton"

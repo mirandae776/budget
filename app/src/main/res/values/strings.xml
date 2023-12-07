@@ -10,6 +10,33 @@
     <string name="basedOn">Based on Your budget of %d</string>
     <string name="info">This budget split is called the 50/30/20 rule </string>
 
-
+    <string-array name="spending_types_array">
+        <item>Rent</item>
+        <item>Groceries</item>
+        <item>Amazon Purchase</item>
+        <item>Transportation</item>
+        <item>Gas</item>
+        <item>Utilities</item>
+        <item>Movie Theater</item>
+        <item>Electricity</item>
+        <item>Online Purchase</item>
+        <item>Water</item>
+        <item>Sewer</item>
+        <item>Tuition</item>
+        <item>Technology</item>
+        <item>Internet</item>
+        <item>Healthcare</item>
+        <item>Entertainment</item>
+        <item>Dining Out</item>
+        <item>Shopping</item>
+        <item>Education</item>
+        <item>Insurance</item>
+        <item>Debt Repayment</item>
+        <item>Subscription Services</item>
+        <item>Travel</item>
+        <item>Gifts and Donations</item>
+        <item>Pets</item>
+        <item>Video Game(s)</item>
+    </string-array>
 
 </resources>

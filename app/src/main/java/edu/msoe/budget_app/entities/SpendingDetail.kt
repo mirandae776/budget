@@ -9,7 +9,8 @@ import java.util.UUID
 data class SpendingDetail(
     @PrimaryKey val id: UUID,
     val amountSpent: Double,
-    val date: Date
+    val date: Date,
+    val description: String
 ) {
 }
 
