@@ -7,7 +7,9 @@ import android.content.ContentValues
 import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
+import android.view.Gravity
 import android.view.LayoutInflater
+import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
@@ -111,27 +113,6 @@ class HomeFragment : Fragment() {
         var total = 0.0
         val budget = viewModel.getBudget()
 
-        val headerRow = TableRow(requireContext())
-
-        val headerDateTextView = TextView(requireContext())
-        headerDateTextView.text = "Date"
-        headerDateTextView.setTextColor(Color.WHITE)
-        headerDateTextView.layoutParams = getTableRowLayoutParams()
-        headerRow.addView(headerDateTextView)
-
-        val headerAmountSpentTextView = TextView(requireContext())
-        headerAmountSpentTextView.text = "Amount Spent"
-        headerAmountSpentTextView.setTextColor(Color.WHITE)
-        headerAmountSpentTextView.layoutParams = getTableRowLayoutParams()
-        headerRow.addView(headerAmountSpentTextView)
-
-        val headerDeleteIcon = ImageView(root.context)
-        headerDeleteIcon.setImageResource(R.drawable.ic_delete) // Use your delete icon resource
-        headerDeleteIcon.layoutParams = getTableRowLayoutParams()
-        headerRow.addView(headerDeleteIcon)
-
-        tableLayout.addView(headerRow)
-
         val selectedMonth = viewModel.selectedMonth
 
         for (item in spendingDetails) {
@@ -148,21 +129,47 @@ class HomeFragment : Fragment() {
                 val dateTextView = TextView(root.context)
                 dateTextView.text = date
                 dateTextView.setTextColor(Color.WHITE)
+                dateTextView.setBackgroundColor(Color.GRAY)
+                dateTextView.gravity = Gravity.CENTER
                 dateTextView.layoutParams = getTableRowLayoutParams()
                 row.addView(dateTextView)
 
                 val moneySpentTextView = TextView(root.context)
                 moneySpentTextView.text = formattedMoneySpent
                 moneySpentTextView.setTextColor(Color.WHITE)
+                moneySpentTextView.setBackgroundColor(Color.DKGRAY)
+                moneySpentTextView.gravity = Gravity.CENTER
                 moneySpentTextView.layoutParams = getTableRowLayoutParams()
                 row.addView(moneySpentTextView)
+
+                val descriptionTextView = TextView(root.context)
+                descriptionTextView.text = item.description
+                descriptionTextView.setTextColor(Color.WHITE)
+                descriptionTextView.setBackgroundColor(Color.GRAY)
+                descriptionTextView.gravity = Gravity.CENTER
+                descriptionTextView.layoutParams = getTableRowLayoutParams()
+                row.addView(descriptionTextView)
 
                 val deleteIcon = ImageView(root.context)
                 deleteIcon.setImageResource(R.drawable.ic_delete) // Use your delete icon resource
                 deleteIcon.layoutParams = getTableRowLayoutParams()
+                deleteIcon.setBackgroundColor(Color.DKGRAY)
+                deleteIcon.setOnTouchListener { view, motionEvent ->
+                    when (motionEvent.action) {
+                        MotionEvent.ACTION_DOWN -> {
+                            // Touch down event, change background color to red
+                            view.setBackgroundColor(Color.RED)
+                        }
+                        MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> {
+                            // Touch up or cancel event, revert background color to DKGRAY
+                            view.setBackgroundColor(Color.DKGRAY)
+                        }
+                    }
+                    // Return false to allow onClickListener to also trigger
+                    false
+                }
                 deleteIcon.setOnClickListener {
-                    deleteSpendingDetailByUUID(item.id.toString())
-                    updateUI(viewModel)
+                    showDeleteConfirmationDialog(item, viewModel)
                 }
                 row.addView(deleteIcon)
 
@@ -184,7 +191,22 @@ class HomeFragment : Fragment() {
         }
 
         val totalText = root.findViewById<TextView>(R.id.totalText)
-        totalText.text = "Total Spending is: $total"
+        totalText.text = "Total Spending is $total"
+    }
+
+    private fun showDeleteConfirmationDialog(item: SpendingDetail, viewModel: DataViewModel) {
+        val builder = AlertDialog.Builder(root.context)
+        builder.setTitle("Confirmation")
+        builder.setMessage("Are you sure you want to delete this item?")
+        builder.setPositiveButton("Yes") { _, _ ->
+            // User clicked Yes, perform delete operation
+            deleteSpendingDetailByUUID(item.id.toString())
+            updateUI(viewModel)
+        }
+        builder.setNegativeButton("No") { _, _ ->
+            // User clicked No, do nothing
+        }
+        builder.show()
     }
 
     private fun setupSpendingTypesAdapter(descriptionEditText: AutoCompleteTextView) {
@@ -320,24 +342,6 @@ class HomeFragment : Fragment() {
         val budget = viewModel.getBudget()
         val spend = viewModel.getSpendingDetails(requireContext())
 
-
-        // Add header row
-        val headerRow = TableRow(requireContext())
-
-        val headerDateTextView = TextView(requireContext())
-        headerDateTextView.text = "Date"
-        headerDateTextView.setTextColor(Color.WHITE)
-        headerDateTextView.layoutParams = getTableRowLayoutParams()
-        headerRow.addView(headerDateTextView)
-
-        val headerAmountSpentTextView = TextView(requireContext())
-        headerAmountSpentTextView.text = "Amount Spent"
-        headerAmountSpentTextView.setTextColor(Color.WHITE)
-        headerAmountSpentTextView.layoutParams = getTableRowLayoutParams()
-        headerRow.addView(headerAmountSpentTextView)
-
-        tableLayout.addView(headerRow)
-
         val currentMonth = Calendar.getInstance().get(Calendar.MONTH) + 1
 
         // Re-create the table with the updated data
@@ -349,8 +353,8 @@ class HomeFragment : Fragment() {
             val row = TableRow(root.context) // Create a new TableRow
 
             if (spendingDetailMonth == currentMonth) {
-                val date = SimpleDateFormat("MMMM d, yyyy", Locale.getDefault()).format(item.date)
-                val formattedMoneySpent = df.format(item.amountSpent)
+                val date = SimpleDateFormat("MMMM d, yyyy", Locale.getDefault()).format(spendingDetail.date)
+                val formattedMoneySpent = df.format(spendingDetail.amountSpent)
 
                 val row = TableRow(root.context) // Create a new TableRow
 
@@ -380,14 +384,7 @@ class HomeFragment : Fragment() {
                 val descriptionTextView = TextView(root.context)
                 descriptionTextView.text = spendingDetail.description
                 descriptionTextView.setTextColor(Color.WHITE)
-
-                val descriptionLayoutParams = TableRow.LayoutParams(
-                    TableRow.LayoutParams.WRAP_CONTENT,
-                    TableRow.LayoutParams.WRAP_CONTENT
-                )
-                descriptionLayoutParams.weight = 1f // Set the layout weight to 1
-                descriptionTextView.layoutParams = descriptionLayoutParams
-                descriptionTextView.setPadding(1, 1, 1, 1)
+                descriptionTextView.layoutParams = getTableRowLayoutParams()
                 row.addView(descriptionTextView)
 
                 tableLayout.addView(row) // Add the TableRow to the TableLayout

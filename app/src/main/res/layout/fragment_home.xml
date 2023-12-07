@@ -59,32 +59,40 @@
         android:background="#51B435"
         app:layout_constraintEnd_toEndOf="@+id/scrollView2"
         app:layout_constraintStart_toStartOf="@+id/scrollView2"
-        app:layout_constraintTop_toBottomOf="@+id/budgetText"
-        >
+        app:layout_constraintTop_toBottomOf="@+id/addButton">
 
         <TextView
-            android:layout_width="wrap_content"
+            android:layout_width="93dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:textAlignment="center"
             android:text="Date"
+            android:textAlignment="center"
             android:textColor="#FFFFFF" />
 
         <TextView
-            android:layout_width="wrap_content"
+            android:layout_width="101dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:textAlignment="center"
             android:background="#008631"
             android:text="Amount Spent"
+            android:textAlignment="center"
             android:textColor="#FFFFFF" />
 
         <TextView
-            android:layout_width="wrap_content"
+            android:layout_width="106dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:textAlignment="center"
             android:text="Description"
+            android:textAlignment="center"
+            android:textColor="#FFFFFF" />
+
+        <TextView
+            android:layout_width="85dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="#FF0000"
+            android:text="Remove"
+            android:textAlignment="center"
             android:textColor="#FFFFFF" />
 
 
@@ -93,7 +101,7 @@
     <ScrollView
         android:id="@+id/scrollView2"
         android:layout_width="350dp"
-        android:layout_height="450dp"
+        android:layout_height="400dp"
         android:layout_marginStart="30dp"
         android:layout_marginTop="20dp"
         android:layout_marginEnd="30dp"
@@ -116,10 +124,15 @@
                 android:layout_height="match_parent"
                 android:background="#51B435"
                 android:padding="10dp"
-                app:layout_constraintStart_toStartOf="@+id/scrollView2"
-                app:layout_constraintTop_toBottomOf="@+id/budgetText"
                 app:layout_constraintEnd_toEndOf="@+id/scrollView2"
-                >
+                app:layout_constraintStart_toStartOf="@+id/scrollView2"
+                app:layout_constraintTop_toBottomOf="@+id/budgetText">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:textColor="#FFFFFF" />
 
                 <TextView
                     android:layout_width="wrap_content"

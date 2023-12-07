@@ -9,7 +9,7 @@ class SpendingDatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATAB
 
     companion object {
         const val DATABASE_NAME = "spending_database"
-        const val DATABASE_VERSION = 2
+        const val DATABASE_VERSION = 4
 
         // Define your table and column names specific to spending details
         const val TABLE_NAME = "spending_detail"
