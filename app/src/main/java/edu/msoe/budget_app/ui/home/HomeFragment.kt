@@ -13,6 +13,7 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.DatePicker
 import android.widget.EditText
+import android.widget.ImageView
 import android.widget.TableLayout
 import android.widget.TableRow
 import android.widget.TextView
@@ -182,15 +183,12 @@ class HomeFragment : Fragment() {
 
     private fun updateUI(viewModel: DataViewModel) {
         val spendingDetails = viewModel.getSpendingDetails(requireContext())
-        // Clear all views from the table
-
         val tableLayout = root.findViewById<TableLayout>(R.id.tableLayout)
         tableLayout.removeAllViews()
 
-        var total = 0.0 // Declare the total variable here
+        var total = 0.0
         val budget = viewModel.getBudget()
 
-        // Add header row
         val headerRow = TableRow(requireContext())
 
         val headerDateTextView = TextView(requireContext())
@@ -205,6 +203,11 @@ class HomeFragment : Fragment() {
         headerAmountSpentTextView.layoutParams = getTableRowLayoutParams()
         headerRow.addView(headerAmountSpentTextView)
 
+        val headerDeleteIcon = ImageView(root.context)
+        headerDeleteIcon.setImageResource(R.drawable.ic_delete) // Use your delete icon resource
+        headerDeleteIcon.layoutParams = getTableRowLayoutParams()
+        headerRow.addView(headerDeleteIcon)
+
         tableLayout.addView(headerRow)
 
         val selectedMonth = viewModel.selectedMonth
@@ -218,31 +221,36 @@ class HomeFragment : Fragment() {
                 val date = SimpleDateFormat("MMMM d, yyyy", Locale.getDefault()).format(item.date)
                 val formattedMoneySpent = df.format(item.amountSpent)
 
-                val row = TableRow(root.context) // Create a new TableRow
+                val row = TableRow(root.context)
 
-                val dateTextView = TextView(root.context) // Create a TextView for the date
+                val dateTextView = TextView(root.context)
                 dateTextView.text = date
-                dateTextView.setTextColor(Color.WHITE) // Set text color to white
+                dateTextView.setTextColor(Color.WHITE)
                 dateTextView.layoutParams = getTableRowLayoutParams()
-
                 row.addView(dateTextView)
 
-                val moneySpentTextView = TextView(root.context) // Create a TextView for the money spent
+                val moneySpentTextView = TextView(root.context)
                 moneySpentTextView.text = formattedMoneySpent
-                moneySpentTextView.setTextColor(Color.WHITE) // Set text color to white
+                moneySpentTextView.setTextColor(Color.WHITE)
                 moneySpentTextView.layoutParams = getTableRowLayoutParams()
+                row.addView(moneySpentTextView)
 
-                row.addView(moneySpentTextView) // Add the money spent TextView to the TableRow
+                val deleteIcon = ImageView(root.context)
+                deleteIcon.setImageResource(R.drawable.ic_delete) // Use your delete icon resource
+                deleteIcon.layoutParams = getTableRowLayoutParams()
+                deleteIcon.setOnClickListener {
+                    deleteSpendingDetailByUUID(item.id.toString())
+                    updateUI(viewModel)
+                }
+                row.addView(deleteIcon)
 
-                // Update the total with the formattedMoneySpent value
                 total += item.amountSpent
 
-                // Check if the total exceeds the budget and highlight the row if needed
                 if (total > budget) {
                     row.setBackgroundColor(root.resources.getColor(android.R.color.holo_red_light))
                 }
 
-                tableLayout.addView(row) // Add the TableRow to the TableLayout
+                tableLayout.addView(row)
 
                 val blankView = TextView(root.context)
                 blankView.text = ""
@@ -252,9 +260,11 @@ class HomeFragment : Fragment() {
                 tableLayout.addView(blankRow)
             }
         }
+
         val totalText = root.findViewById<TextView>(R.id.totalText)
         totalText.text = "Total Spending is: $total"
     }
+
 
 
 
@@ -364,6 +374,20 @@ class HomeFragment : Fragment() {
 
         db?.insert(SpendingDatabaseHelper.TABLE_NAME, null, values)
     }
+
+    private fun deleteSpendingDetailByUUID(uuid: String) {
+        val db = spendingDbHelper?.writableDatabase
+
+        // Specify the WHERE clause to delete the record with the given UUID
+        val whereClause = "${SpendingDatabaseHelper.COLUMN_ID} = ?"
+
+        // Specify the value for the WHERE clause
+        val whereArgs = arrayOf(uuid)
+
+        // Perform the delete operation
+        db?.delete(SpendingDatabaseHelper.TABLE_NAME, whereClause, whereArgs)
+    }
+
 
 
     private fun recreateTable(viewModel: DataViewModel, spendingDetails: List<SpendingDetail>) {

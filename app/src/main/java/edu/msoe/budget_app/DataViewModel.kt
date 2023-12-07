@@ -74,7 +74,9 @@ class DataViewModel(application: Application) : AndroidViewModel(application) {
         }
 
         cursor.close()
-
+        for(i in spendingDetails){
+            print("i = " + i)
+        }
         return spendingDetails
     }
 
@@ -121,3 +123,4 @@ class DataViewModel(application: Application) : AndroidViewModel(application) {
         return dateFormat.format(calendar.time).toUpperCase(Locale.US)
     }
 }
+
