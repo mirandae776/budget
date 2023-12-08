@@ -40,7 +40,7 @@ class MainActivity : AppCompatActivity() {
             date = Date()
         )
         Log.d("BUDGET ADDED", "Initial budget added: $initialSpendingDetail")
-        addSpendingDetail(initialSpendingDetail)
+        //addSpendingDetail(initialSpendingDetail)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 

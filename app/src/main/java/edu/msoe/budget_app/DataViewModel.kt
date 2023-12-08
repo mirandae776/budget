@@ -1,6 +1,7 @@
 package edu.msoe.budget_app
 
 import android.app.Application
+import android.content.ContentValues
 import android.content.Context
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
@@ -26,6 +27,7 @@ class DataViewModel(application: Application) : AndroidViewModel(application) {
 
     private val budgetDbHelper: BudgetDatabaseHelper = BudgetDatabaseHelper(application)
     var selectedMonth: String = getFormattedCurrentMonth()
+    var selectedBudget: Int = getBudgets()[getBudgets().size-1];
 
     private val _spendingDetails = MutableLiveData<List<SpendingDetail>>()
     val spendingDetails: LiveData<List<SpendingDetail>> get() = _spendingDetails
@@ -74,11 +76,38 @@ class DataViewModel(application: Application) : AndroidViewModel(application) {
         }
 
         cursor.close()
-        for(i in spendingDetails){
-            print("i = " + i)
-        }
+
         return spendingDetails
     }
+
+    fun getBudgets(): List<Int> {
+        val database = budgetDbHelper.readableDatabase
+
+        // Query the database to get all entries
+        val cursor = database.query(
+            BudgetDatabaseHelper.TABLE_NAME,
+            arrayOf(BudgetDatabaseHelper.COLUMN_BUDGET),
+            null,
+            null,
+            null,
+            null,
+            null
+        )
+
+        val budgetList = mutableListOf<Int>()
+
+        // Retrieve budget values from the cursor
+        while (cursor.moveToNext()) {
+            val budget = cursor.getInt(cursor.getColumnIndexOrThrow(BudgetDatabaseHelper.COLUMN_BUDGET))
+            budgetList.add(budget)
+        }
+
+        cursor.close()
+
+        return budgetList
+    }
+
+
 
     fun getBudget(): Int {
         val database = budgetDbHelper.readableDatabase
@@ -101,6 +130,54 @@ class DataViewModel(application: Application) : AndroidViewModel(application) {
         cursor.close()
 
         return budget
+    }
+
+    fun addBudgetToDatabase(budgetAmount: Int) {
+        val database = budgetDbHelper.writableDatabase
+
+        // Create a ContentValues object to hold the values to be inserted
+        val values = ContentValues().apply {
+            put(BudgetDatabaseHelper.COLUMN_BUDGET, budgetAmount)
+        }
+
+        // Insert the budget into the database
+        val newRowId = database.insert(BudgetDatabaseHelper.TABLE_NAME, null, values)
+
+        // Optionally, you can log the result or perform any other necessary actions
+        if (newRowId != -1L) {
+            // Insert successful
+            // Log or handle success as needed
+        } else {
+            // Insert failed
+            // Log or handle failure as needed
+        }
+    }
+
+    fun getMostRecentBudget(): Int {
+        val database = budgetDbHelper.readableDatabase
+
+        // Query the database to get the most recent entry
+        val cursor = database.query(
+            BudgetDatabaseHelper.TABLE_NAME,
+            arrayOf(BudgetDatabaseHelper.COLUMN_BUDGET),
+            null,
+            null,
+            null,
+            null,
+            "${BudgetDatabaseHelper.COLUMN_BUDGET} DESC", // Order by ID in descending order
+            null // Limit the result to one row
+        )
+
+        var recentBudget = 0
+
+        // Retrieve the budget value from the cursor
+        if (cursor.moveToFirst()) {
+            recentBudget = cursor.getInt(cursor.getColumnIndexOrThrow(BudgetDatabaseHelper.COLUMN_BUDGET))
+        }
+
+        cursor.close()
+
+        return recentBudget
     }
 
     private fun convertStringToDate(dateString: String): Date? {

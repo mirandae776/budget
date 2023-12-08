@@ -117,9 +117,6 @@ class HomeFragment : Fragment() {
         //var viewModel: DataViewModel = ViewModelProvider(this).get(DataViewModel::class.java)
         val viewModel by activityViewModels<DataViewModel>()
         var spendingEntries = viewModel.getSpendingDetails(this.requireContext())
-        for(i in spendingEntries){
-            println(spendingEntries)
-        }
         val currentMonth = Calendar.getInstance().get(Calendar.MONTH) + 1
         val currentMonthString = currentMonth.toString()
 
@@ -158,7 +155,7 @@ class HomeFragment : Fragment() {
 
         viewModel.spendingDetails.observe(viewLifecycleOwner) { spendingDetails ->
             if (spendingDetails.isNotEmpty()) {
-                println("IS THIS CALLED")
+
                 updateUI(viewModel)
             }
         }
