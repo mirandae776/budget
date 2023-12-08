@@ -5,9 +5,10 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 
 class NotificationsViewModel : ViewModel() {
+    private val _budget = MutableLiveData<Int>()
+    val budget: LiveData<Int> get() = _budget
 
-    private val _text = MutableLiveData<String>().apply {
-        value = "This is notifications Fragment"
+    fun updateBudget(newBudget: Int) {
+        _budget.value = newBudget
     }
-    val text: LiveData<String> = _text
 }

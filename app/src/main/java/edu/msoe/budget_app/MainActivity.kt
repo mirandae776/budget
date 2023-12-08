@@ -1,33 +1,36 @@
 package edu.msoe.budget_app
 
+import android.content.ContentValues
+import android.content.Context
 import android.os.Bundle
+import android.util.Log
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
-import androidx.room.Room
-import edu.msoe.budget_app.database.AppDatabase
-import edu.msoe.budget_app.database.Repository
+import edu.msoe.budget_app.database.BudgetDatabaseHelper
+import edu.msoe.budget_app.database.DBHelper
+import edu.msoe.budget_app.database.SpendingDatabaseHelper
+//import edu.msoe.budget_app.database.Repository
 import edu.msoe.budget_app.databinding.ActivityMainBinding
+import edu.msoe.budget_app.entities.SpendingDetail
+import java.util.Date
+import java.util.UUID
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
     companion object {
-        lateinit var database: AppDatabase
-        lateinit var budgetRepository: Repository
+        var spendingDbHelper: SpendingDatabaseHelper? = null
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        database = Room.databaseBuilder(
-            applicationContext,
-            AppDatabase::class.java, "budget-database"
-        ).build()
 
-        budgetRepository = Repository(database.budgetDao())
+        spendingDbHelper?.close()
+        spendingDbHelper = SpendingDatabaseHelper(applicationContext)
 
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
@@ -44,5 +47,18 @@ class MainActivity : AppCompatActivity() {
         )
         setupActionBarWithNavController(navController, appBarConfiguration)
         navView.setupWithNavController(navController)
+
+    }
+
+    private fun addSpendingDetail(detail: SpendingDetail) {
+        val db = spendingDbHelper?.writableDatabase
+        val values = ContentValues()
+
+        // Use constants from SpendingDatabaseHelper
+        values.put(SpendingDatabaseHelper.COLUMN_ID, detail.id.toString())
+        values.put(SpendingDatabaseHelper.COLUMN_AMOUNT_SPENT, detail.amountSpent)
+        values.put(SpendingDatabaseHelper.COLUMN_DATE, detail.date.toString())
+
+        db?.insert(SpendingDatabaseHelper.TABLE_NAME, null, values)
     }
 }

@@ -1,32 +1,38 @@
 package edu.msoe.budget_app.database
 
-import edu.msoe.budget_app.database.BudgetDao
-import edu.msoe.budget_app.entities.BudgetDetail
+import android.database.sqlite.SQLiteDatabase
+import edu.msoe.budget_app.entities.SpendingDetail
 import kotlinx.coroutines.flow.Flow
 import java.util.UUID
 
-class Repository(private val budgetDao: BudgetDao) {
-    fun getBudgetDetails(): Flow<List<BudgetDetail>> {
-        return budgetDao.getBudgetDetails()
+/*
+class Repository(private val budgetDao: SQLiteDatabase) {
+    fun getSpendingDetails(): Flow<List<SpendingDetail>> {
+        return budgetDao.getSpendingDetails()
     }
 
-    fun getBudgetDetail(id: UUID): BudgetDetail {
-        return budgetDao.getBudgetDetail(id)
+    fun getSpendingDetail(id: UUID): SpendingDetail {
+        return budgetDao.getSpendingDetail(id)
     }
 
-    fun deleteBudgetDetails() {
-        budgetDao.deleteBudgetDetails()
+    fun deleteSpendingDetails() {
+        budgetDao.deleteSpendingDetails()
     }
 
     fun deleteThisClass(id: UUID) {
         budgetDao.deleteThisClass(id)
     }
 
-    fun addBudgetDetail(budgetDetail: BudgetDetail) {
-        budgetDao.addBudgetDetail(budgetDetail)
+    fun addSpendingDetail(spendingDetail: SpendingDetail) {
+        budgetDao.addSpendingDetail(spendingDetail)
     }
 
-    fun updateBudgetDetail(budgetDetail: BudgetDetail) {
-        budgetDao.updateBudgetDetail(budgetDetail)
+    fun updateSpendingDetail(spendingDetail: SpendingDetail) {
+        budgetDao.updateSpendingDetail(spendingDetail)
+    }
+
+    suspend fun getSpending(): SpendingDetail? {
+        return budgetDao.getSpendingDetail()
     }
 }
+*/

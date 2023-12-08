@@ -5,6 +5,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="#2C2C2C"
     tools:context=".ui.home.HomeFragment">
 
     <!-- Create a space at the bottom to occupy one-quarter of the available space -->
@@ -13,17 +14,23 @@
 
     <TextView
         android:id="@+id/budgetText"
-        android:layout_width="247dp"
-        android:layout_height="30dp"
-        android:text="YOUR BUDGET IS 500 dollars"
-        app:layout_constraintBottom_toTopOf="@+id/scrollView2"
-        app:layout_constraintStart_toStartOf="parent" />
+        android:layout_width="192dp"
+        android:layout_height="36dp"
+        android:layout_marginStart="30dp"
+        android:layout_marginTop="10dp"
+        android:text="Your Budget is $1000 dollars"
+        android:textColor="#FFFFFF"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/currentMonthText" />
 
     <TextView
         android:id="@+id/totalText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="TextView"
+        android:layout_marginStart="30dp"
+        android:layout_marginTop="20dp"
+        android:text="Total Spending"
+        android:textColor="#FFFFFF"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/scrollView2" />
 
@@ -31,10 +38,11 @@
         android:id="@+id/currentMonthText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="5dp"
+        android:layout_marginStart="10dp"
         android:layout_marginTop="10dp"
         android:padding="5dp"
-        android:text="ICC Ranking of Players:"
+        android:text="Expenses for Month"
+        android:textColor="#FFFFFF"
         android:textSize="20sp"
         android:textStyle="bold"
         app:layout_constraintStart_toStartOf="parent"
@@ -42,42 +50,101 @@
 
     </TextView>
 
+    <!-- Add your TableRows with data here -->
+    <TableRow
+        android:id="@+id/tableRowLabels"
+        android:layout_width="350dp"
+        android:layout_height="25dp"
+        android:layout_marginTop="20dp"
+        android:background="#51B435"
+        app:layout_constraintEnd_toEndOf="@+id/scrollView2"
+        app:layout_constraintStart_toStartOf="@+id/scrollView2"
+        app:layout_constraintTop_toBottomOf="@+id/addButton">
+
+        <TextView
+            android:layout_width="93dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:text="Date"
+            android:textAlignment="center"
+            android:textColor="#FFFFFF" />
+
+        <TextView
+            android:layout_width="101dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="#008631"
+            android:text="Amount Spent"
+            android:textAlignment="center"
+            android:textColor="#FFFFFF" />
+
+        <TextView
+            android:layout_width="106dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:text="Description"
+            android:textAlignment="center"
+            android:textColor="#FFFFFF" />
+
+        <TextView
+            android:layout_width="85dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="#FF0000"
+            android:text="Remove"
+            android:textAlignment="center"
+            android:textColor="#FFFFFF" />
+
+
+    </TableRow>
+
     <ScrollView
         android:id="@+id/scrollView2"
-        android:layout_width="413dp"
-        android:layout_height="518dp"
-        android:layout_marginTop="36dp"
+        android:layout_width="350dp"
+        android:layout_height="400dp"
+        android:layout_marginStart="30dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginEnd="30dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/currentMonthText">
+        app:layout_constraintTop_toBottomOf="@+id/tableRowLabels">
 
         <TableLayout
             android:id="@+id/tableLayout"
             android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_marginTop="10dp"
-            android:layout_weight="3"
-            android:paddingLeft="5dp"
-            android:paddingRight="5dp">
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp">
 
 
             <!-- Add your TableRows with data here -->
             <TableRow
+                android:id="@+id/tableRow"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
                 android:background="#51B435"
-                android:padding="10dp">
+                android:padding="10dp"
+                app:layout_constraintEnd_toEndOf="@+id/scrollView2"
+                app:layout_constraintStart_toStartOf="@+id/scrollView2"
+                app:layout_constraintTop_toBottomOf="@+id/budgetText">
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="Date" />
+                    android:textColor="#FFFFFF" />
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="Amount Spent" />
+                    android:textColor="#FFFFFF" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:textColor="#FFFFFF" />
 
 
             </TableRow>
@@ -102,8 +169,31 @@
         android:id="@+id/addButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Button"
-        app:layout_constraintBottom_toTopOf="@+id/scrollView2"
-        app:layout_constraintEnd_toEndOf="parent" />
+        android:layout_marginTop="8dp"
+        android:text="Add Payment"
+        android:background="#999999"
+        app:layout_constraintEnd_toEndOf="@+id/scrollView2"
+        app:layout_constraintTop_toTopOf="@+id/budgetText" />
+
+    <Button
+        android:id="@+id/sortButton"
+        android:layout_width="97dp"
+        android:layout_height="50dp"
+        android:layout_marginTop="12dp"
+        android:layout_marginEnd="16dp"
+        android:text=" change sorting"
+        android:textSize="12sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/sortTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="30dp"
+        android:text="Sorted By:"
+        android:textColor="#FFFFFF"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/budgetText" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

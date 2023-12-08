@@ -6,10 +6,11 @@ import java.util.Date
 import java.util.UUID
 
 @Entity
-data class BudgetDetail(
+data class SpendingDetail(
     @PrimaryKey val id: UUID,
     val amountSpent: Double,
-    val date: Date
+    val date: Date,
+    val description: String
 ) {
 }
 

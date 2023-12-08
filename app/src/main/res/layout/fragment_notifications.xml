@@ -4,7 +4,23 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="#2C2C2C"
     tools:context=".ui.notifications.NotificationsFragment">
+
+    <TextView
+        android:id="@+id/text_notifications"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        android:textAlignment="center"
+        android:textColor="#FFFFFF"
+        android:textSize="0sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <EditText
         android:id="@+id/changeBudgetText"
@@ -14,6 +30,8 @@
         android:layout_marginTop="92dp"
         android:ems="10"
         android:hint="Enter a Budget"
+        android:textColorHint="#FFFFFF"
+        android:textColor="#FFFFFF"
         android:inputType="number"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -25,6 +43,7 @@
         android:layout_marginTop="84dp"
         android:layout_marginEnd="48dp"
         android:text="Enter"
+        android:textColor="#FFFFFF"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -35,6 +54,7 @@
         android:layout_marginStart="16dp"
         android:layout_marginTop="48dp"
         android:text="Current Monthly Budget:"
+        android:textColor="#FFFFFF"
         android:textSize="16sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -47,6 +67,7 @@
         android:layout_marginEnd="132dp"
         android:text="5000"
         android:textAlignment="center"
+        android:textColor="#FFFFFF"
         android:textSize="16sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -57,6 +78,7 @@
         android:layout_height="26dp"
         android:layout_marginStart="21dp"
         android:layout_marginTop="5dp"
+        android:textColor="#FFFFFF"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/changeBudgetText" />
 
@@ -67,6 +89,7 @@
         android:layout_marginStart="16dp"
         android:layout_marginTop="8dp"
         android:text="You Should Budget"
+        android:textColor="#FFFFFF"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/basedOnText" />
 
@@ -76,6 +99,7 @@
         android:layout_height="22dp"
         android:layout_marginStart="20dp"
         android:layout_marginTop="20dp"
+        android:textColor="#FFFFFF"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView3" />
 
@@ -85,6 +109,7 @@
         android:layout_height="24dp"
         android:layout_marginStart="20dp"
         android:layout_marginTop="16dp"
+        android:textColor="#FFFFFF"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/needsTextView" />
 
@@ -94,6 +119,7 @@
         android:layout_height="23dp"
         android:layout_marginStart="20dp"
         android:layout_marginTop="15dp"
+        android:textColor="#FFFFFF"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/wantsTextView" />
 

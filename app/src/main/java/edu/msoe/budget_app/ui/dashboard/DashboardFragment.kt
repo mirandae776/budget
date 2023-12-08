@@ -1,9 +1,13 @@
 package edu.msoe.budget_app.ui.dashboard
 
+import edu.msoe.budget_app.database.BudgetDatabaseHelper
+import android.content.ContentValues
+import android.graphics.Color
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
 import android.widget.TableLayout
 import android.widget.TableRow
 import android.widget.TextView
@@ -15,8 +19,10 @@ import edu.msoe.budget_app.DataViewModel
 import edu.msoe.budget_app.R
 import edu.msoe.budget_app.databinding.FragmentDashboardBinding
 import java.text.DecimalFormat
+import java.text.SimpleDateFormat
 import java.time.LocalDate
 import java.time.Month
+import java.util.Locale
 
 class DashboardFragment : Fragment() {
 
@@ -28,6 +34,7 @@ class DashboardFragment : Fragment() {
     lateinit var dateAndMoneyArray: MutableList<String>
     lateinit var tableLayout: TableLayout
     private val df = DecimalFormat("#.##")
+    private lateinit var budgetDatabaseHelper: BudgetDatabaseHelper
 
 
     fun calculateTotalValuesByMonth(data: MutableList<String>): Array<String> {
@@ -60,6 +67,8 @@ class DashboardFragment : Fragment() {
     }
 
 
+
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -69,71 +78,97 @@ class DashboardFragment : Fragment() {
             ViewModelProvider(this).get(DashboardViewModel::class.java)
         //var viewModel: DataViewModel = ViewModelProvider(this).get(DataViewModel::class.java)
         val viewModel by activityViewModels<DataViewModel>()
-        dateAndMoneyArray = viewModel.data
-        val testing = calculateTotalValuesByMonth(dateAndMoneyArray)
-
+        //dateAndMoneyArray = context?.let { viewModel.getSpendingDetails(it) }
+        //val testing = calculateTotalValuesByMonth(dateAndMoneyArray)
 
 
 
         _binding = FragmentDashboardBinding.inflate(inflater, container, false)
         val root: View = binding.root
 
-       tableLayout = root.findViewById(R.id.yearTable)
+        tableLayout = root.findViewById(R.id.yearTable)
+
+        budgetDatabaseHelper = BudgetDatabaseHelper(requireContext())
+
+        val dataButton = root.findViewById<Button>(R.id.testDataButton)
+        //var spendingDetails = context?.let { viewModel.getSpendingDetails(it) }
+
+        val spendingDetails = viewModel.getSpendingDetails(requireContext())
 
 
-        for (item in testing) {
-            val parts = item.split(",") // Split the string into date and money parts
-            if (parts.size == 2) {
-                val date = parts[0]
-                val moneySpent = parts[1]
 
-                val row = TableRow(root.context) // Create a new TableRow
+        if (spendingDetails != null) {
+            // Assuming spendingDetails is a List of objects with properties date (Date) and amountSpent (Double)
 
+// Create a HashMap to store total spending for each month
+            val monthlyTotalMap = HashMap<String, Double>()
 
-                val dateTextView = TextView(root.context) // Create a TextView for the date
-                dateTextView.text = date
+            for (item in spendingDetails) {
+                val monthYearFormat = SimpleDateFormat("MMMM yyyy", Locale.getDefault())
+                val monthYear = monthYearFormat.format(item.date)
 
-                val dateLayoutParams = TableRow.LayoutParams(
-                    TableRow.LayoutParams.WRAP_CONTENT,
-                    TableRow.LayoutParams.WRAP_CONTENT
-                )
-                dateLayoutParams.weight = 1f // Set the layout weight to 1
-                dateTextView.layoutParams = dateLayoutParams
+                // Update total spending for the current month
+                monthlyTotalMap[monthYear] = (monthlyTotalMap[monthYear] ?: 0.0) + item.amountSpent
 
-                row.addView(dateTextView)
+                // Check if a TableRow for the current month already exists
+                val existingRow = tableLayout.findViewWithTag<TableRow>(monthYear)
 
-                val moneySpentTextView = TextView(root.context) // Create a TextView for the money spent
-                moneySpentTextView.text = df.format(moneySpent.toDouble())
+                if (existingRow == null) {
+                    // If the TableRow doesn't exist, create a new one
+                    val row = TableRow(root.context)
+                    row.tag = monthYear // Set a tag to identify the TableRow for this month
 
-                val moneySpentLayoutParams = TableRow.LayoutParams(
-                    TableRow.LayoutParams.WRAP_CONTENT,
-                    TableRow.LayoutParams.WRAP_CONTENT
-                )
-                moneySpentLayoutParams.weight = 1f // Set the layout weight to 1
-                moneySpentTextView.layoutParams = moneySpentLayoutParams
+                    val dateTextView = TextView(root.context)
+                    dateTextView.text = monthYear
+                    dateTextView.setTextColor(Color.WHITE)
 
-                row.addView(moneySpentTextView) // Add the money spent TextView to the TableRow
-                // Add the money spent TextView to the TableRow
+                    val dateLayoutParams = TableRow.LayoutParams(
+                        TableRow.LayoutParams.WRAP_CONTENT,
+                        TableRow.LayoutParams.WRAP_CONTENT
+                    )
+                    dateLayoutParams.weight = 1f
+                    dateTextView.layoutParams = dateLayoutParams
 
-                row.setOnClickListener(View.OnClickListener {
-                    // Handle the row click event here
-                    val clickedRow = it as TableRow
-                    val date = (clickedRow.getChildAt(0) as TextView).text.toString()
-                    val value = (clickedRow.getChildAt(1) as TextView).text.toString()
-                    println("Clicked Row: Date = $date, Value = $value")
-                    viewModel.selectedMonth = date
-                    println(viewModel.selectedMonth)
-                    val navController = Navigation.findNavController(it)
-                    navController.navigate(R.id.action_navigation_dashboard_to_navigation_home)
-                })
+                    row.addView(dateTextView)
 
-                tableLayout.addView(row) // Add the TableRow to the TableLayout
+                    val moneySpentTextView = TextView(root.context)
+                    moneySpentTextView.text = df.format(monthlyTotalMap[monthYear])
+                    moneySpentTextView.setTextColor(Color.WHITE)
+
+                    val moneySpentLayoutParams = TableRow.LayoutParams(
+                        TableRow.LayoutParams.WRAP_CONTENT,
+                        TableRow.LayoutParams.WRAP_CONTENT
+                    )
+                    moneySpentLayoutParams.weight = 1f
+                    moneySpentTextView.layoutParams = moneySpentLayoutParams
+
+                    row.addView(moneySpentTextView)
+
+                    row.setOnClickListener(View.OnClickListener {
+                        val clickedRow = it as TableRow
+                        val selectedMonth = clickedRow.getTag() as String
+                        viewModel.selectedMonth = selectedMonth
+                        val navController = Navigation.findNavController(it)
+                        navController.navigate(R.id.action_navigation_dashboard_to_navigation_home)
+                    })
+
+                    tableLayout.addView(row)
+                } else {
+                    // If the TableRow already exists, update the total spending TextView
+                    val moneySpentTextView =
+                        existingRow.getChildAt(1) as TextView // Assuming the money spent TextView is the second child
+                    moneySpentTextView.text = df.format(monthlyTotalMap[monthYear])
+                }
             }
+
+// Add a blank row at the end if needed
             val blankView = TextView(root.context)
-            blankView.text = "";
+            blankView.text = ""
             val blankRow = TableRow(root.context)
             blankRow.addView(blankView)
             tableLayout.addView(blankRow)
+
+
         }
 
         val textView: TextView = binding.textDashboard
@@ -142,6 +177,38 @@ class DashboardFragment : Fragment() {
         }
         return root
     }
+
+
+
+
+    private fun getTotalBudgetData(): Double {
+        val db = budgetDatabaseHelper.readableDatabase
+
+        val projection = arrayOf(BudgetDatabaseHelper.COLUMN_BUDGET)
+        val cursor = db.query(
+            BudgetDatabaseHelper.TABLE_NAME,
+            projection,
+            null,
+            null,
+            null,
+            null,
+            null
+        )
+
+        var totalBudget = 0.0
+
+        with(cursor) {
+            while (moveToNext()) {
+                val budgetValue = getDouble(getColumnIndexOrThrow(BudgetDatabaseHelper.COLUMN_BUDGET))
+                totalBudget += budgetValue
+            }
+            close()
+        }
+
+        return totalBudget
+    }
+
+
 
     override fun onDestroyView() {
         super.onDestroyView()
