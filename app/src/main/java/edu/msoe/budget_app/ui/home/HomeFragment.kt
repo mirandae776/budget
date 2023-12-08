@@ -1,5 +1,6 @@
 package edu.msoe.budget_app.ui.home
 
+import android.annotation.SuppressLint
 import android.app.AlertDialog
 import android.app.DatePickerDialog
 import android.app.Dialog
@@ -69,19 +70,28 @@ class HomeFragment : Fragment() {
         // current date and time and calling a simple
         // date format in it.
         val currentDate = sdf.format(Date())
-        var dateParts = currentDate.split("-")
         val currentMonthName = viewModel.selectedMonth
 
         _binding = FragmentHomeBinding.inflate(inflater, container, false)
         root = binding.root
 
-        val tableLayout = root.findViewById<TableLayout>(R.id.tableLayout) // Assuming you have a TableLayout in your layout file with the ID 'tableLayout'
 
         val addButton = root.findViewById<Button>(R.id.addButton)
         addButton.setOnClickListener {
             showAddPopup(spendingEntries)
         }
         updateUI(viewModel)
+        val sortButton = root.findViewById<Button>(R.id.sortButton)
+        val sortText = root.findViewById<TextView>(R.id.sortTextView)
+        sortText.text = "Sorted By: " + viewModel.selectedSorting
+
+        sortButton.setOnClickListener{
+            changeSorting(viewModel)
+            updateUI(viewModel)
+            sortText.text = "Sorted By: " + viewModel.selectedSorting
+        }
+
+
 
 
 
@@ -98,28 +108,45 @@ class HomeFragment : Fragment() {
         currentMonthText.text = "Expenses for $currentMonthName"
 
         val budgetText = root.findViewById<TextView>(R.id.budgetText)
-        val budget = viewModel.getBudget()
+        val budget = viewModel.selectedBudget
         budgetText.text = "You're budget is $" + budget
         return root
     }
 
+    private fun changeSorting(viewModel: DataViewModel){
+        val sorting = viewModel.selectedSorting
+        if(sorting === "date"){
+            viewModel.selectedSorting = "amount"
+        } else{
+            viewModel.selectedSorting = "date"
+        }
+    }
+
+    @SuppressLint("ClickableViewAccessibility")
     private fun updateUI(viewModel: DataViewModel) {
         val spendingDetails = viewModel.getSpendingDetails(requireContext())
         val tableLayout = root.findViewById<TableLayout>(R.id.tableLayout)
         tableLayout.removeAllViews()
 
         var total = 0.0
-        val budget = viewModel.getBudget()
+        val budget = viewModel.selectedBudget
 
         val selectedMonth = viewModel.selectedMonth
 
-        for (item in spendingDetails) {
+        val selectedSorting = viewModel.selectedSorting
+        val sortedSpendingDetails = when (selectedSorting) {
+            "date" -> spendingDetails.sortedByDescending { it.date }
+            "amount" -> spendingDetails.sortedByDescending { it.amountSpent }
+            else -> spendingDetails
+        }
+
+        for (item in sortedSpendingDetails) {
             val calendar = Calendar.getInstance()
             calendar.time = item.date
             val spendingDetailMonth = SimpleDateFormat("MMMM yyyy", Locale.getDefault()).format(item.date)
 
             if (spendingDetailMonth.equals(selectedMonth, ignoreCase = true)) {
-                val date = SimpleDateFormat("MMMM d, yyyy", Locale.getDefault()).format(item.date)
+                val date = SimpleDateFormat("MMM d, yyyy", Locale.getDefault()).format(item.date)
                 val formattedMoneySpent = df.format(item.amountSpent)
 
                 val row = TableRow(root.context)
@@ -175,6 +202,7 @@ class HomeFragment : Fragment() {
 
                 if (total > budget) {
                     row.setBackgroundColor(root.resources.getColor(android.R.color.holo_red_light))
+                    moneySpentTextView.setBackgroundColor(root.resources.getColor(android.R.color.holo_red_light))
                 }
 
                 tableLayout.addView(row)

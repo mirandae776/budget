@@ -29,6 +29,7 @@ class DataViewModel(application: Application) : AndroidViewModel(application) {
     private val budgetDbHelper: BudgetDatabaseHelper = BudgetDatabaseHelper(application)
     var selectedMonth: String = getFormattedCurrentMonth()
     var selectedBudget: Int = getBudgets()[getBudgets().size-1];
+    var selectedSorting: String = "date"
 
     private val _spendingDetails = MutableLiveData<List<SpendingDetail>>()
     val spendingDetails: LiveData<List<SpendingDetail>> get() = _spendingDetails
