@@ -39,6 +39,7 @@ class NotificationsFragment : Fragment() {
         val notificationsViewModel =
             ViewModelProvider(this).get(NotificationsViewModel::class.java)
         val viewModel by activityViewModels<DataViewModel>()
+        println(viewModel.getBudgets().get(viewModel.getBudgets().size-1))
 
         _binding = FragmentNotificationsBinding.inflate(inflater, container, false)
         val root: View = binding.root
@@ -48,14 +49,14 @@ class NotificationsFragment : Fragment() {
         val wantsText = root.findViewById<TextView>(R.id.wantsTextView)
         val savingsText = root.findViewById<TextView>(R.id.savingsTextView)
         val basedOnText = root.findViewById<TextView>(R.id.basedOnText)
-        var budget = viewModel.getBudget()
+        var budget = viewModel.selectedBudget
         budgetText.text = budget.toString()
 
-        val changeBudgetEditText = root.findViewById<EditText>(R.id.changeBudgetText)
-        val needsAllocation = getString(R.string.needs_allocation, (budget * 0.50).toString())
-        val wantsAllocation = getString(R.string.wants_allocation, (budget * 0.30).toString())
-        val savingsAllocation = getString(R.string.savings_allocation, (budget * 0.20).toString())
-        val basedOn = getString(R.string.basedOn, budget)
+        var changeBudgetEditText = root.findViewById<EditText>(R.id.changeBudgetText)
+        var needsAllocation = getString(R.string.needs_allocation, (budget * 0.50).toString())
+        var wantsAllocation = getString(R.string.wants_allocation, (budget * 0.30).toString())
+        var savingsAllocation = getString(R.string.savings_allocation, (budget * 0.20).toString())
+        var basedOn = getString(R.string.basedOn, budget)
         needsText.text = needsAllocation;
         wantsText.text = wantsAllocation
         savingsText.text = savingsAllocation
@@ -70,19 +71,36 @@ class NotificationsFragment : Fragment() {
         changeButton.setOnClickListener {
             val newBudgetValueString = changeBudgetEditText.text.toString()
 
+
+
             // Validate if the entered value is a valid integer
-            if (newBudgetValueString.isNotEmpty() && newBudgetValueString.matches(Regex("-?\\d+"))) {
+            if (newBudgetValueString.isNotEmpty()) {
+                println("did this run")
                 val newBudgetValue = newBudgetValueString.toInt()
 
                 // Insert the new budget value into the database
-                insertBudgetData(newBudgetValue)
+                //insertBudgetData(newBudgetValue)
+                viewModel.addBudgetToDatabase(newBudgetValue)
 
-                // Get the most recent entry from the database and store it in tbudget
-                val tbudget = getMostRecentBudgetData()
+                println("Farm view model: " + viewModel.selectedBudget)
+                println(viewModel.getBudgets()[viewModel.getBudgets().size-1])
+                viewModel.selectedBudget = viewModel.getBudgets()[viewModel.getBudgets().size-1]
+
+
+
 
                 // Update viewModel.budget and UI with the new budget value
-                budget = tbudget.toInt()
-                budgetText.text = tbudget.toString()
+                budget = viewModel.selectedBudget
+                needsAllocation = getString(R.string.needs_allocation, (budget * 0.50).toString())
+                wantsAllocation = getString(R.string.wants_allocation, (budget * 0.30).toString())
+                savingsAllocation = getString(R.string.savings_allocation, (budget * 0.20).toString())
+                basedOn = getString(R.string.basedOn, budget)
+                needsText.text = needsAllocation;
+                wantsText.text = wantsAllocation
+                savingsText.text = savingsAllocation
+                basedOnText.text = basedOn
+                budgetText.text = viewModel.selectedBudget.toString()
+
             } else {
                 // Show a toast message for an invalid budget value
                 Toast.makeText(
@@ -120,46 +138,8 @@ class NotificationsFragment : Fragment() {
         return root
     }
 
-    private fun insertBudgetData(budgetValue: Int) {
-        val db = budgetDatabaseHelper.writableDatabase
 
-        val values = ContentValues().apply {
-            put(BudgetDatabaseHelper.COLUMN_BUDGET, budgetValue)
-        }
 
-        println()
-
-        db.insert(BudgetDatabaseHelper.TABLE_NAME, null, values)
-        db.close()
-    }
-
-    private fun getMostRecentBudgetData(): Double {
-        val db = budgetDatabaseHelper.readableDatabase
-
-        val projection = arrayOf(BudgetDatabaseHelper.COLUMN_BUDGET)
-
-        val cursor = db.query(
-            BudgetDatabaseHelper.TABLE_NAME,
-            projection,
-            null,
-            null,
-            null,
-            null,
-            "${BudgetDatabaseHelper.COLUMN_BUDGET} DESC", // Order by COLUMN_BUDGET in descending order
-            "1" // Limit to 1 result
-        )
-
-        var mostRecentBudget = 0.0
-
-        with(cursor) {
-            if (moveToNext()) {
-                mostRecentBudget = getDouble(getColumnIndexOrThrow(BudgetDatabaseHelper.COLUMN_BUDGET))
-            }
-            close()
-        }
-
-        return mostRecentBudget
-    }
 
 
 

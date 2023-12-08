@@ -54,9 +54,6 @@ class HomeFragment : Fragment() {
     ): View {
         val viewModel by activityViewModels<DataViewModel>()
         var spendingEntries = viewModel.getSpendingDetails(this.requireContext())
-        for(i in spendingEntries){
-            println(spendingEntries)
-        }
         val currentMonth = Calendar.getInstance().get(Calendar.MONTH) + 1
         val currentMonthString = currentMonth.toString()
 
@@ -92,6 +89,7 @@ class HomeFragment : Fragment() {
             if (spendingDetails.isNotEmpty()) {
                 println("IS THIS CALLED")
                 recreateTable(viewModel)
+
                 updateUI(viewModel)
             }
         }

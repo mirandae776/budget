@@ -148,7 +148,6 @@ class DashboardFragment : Fragment() {
                         val clickedRow = it as TableRow
                         val selectedMonth = clickedRow.getTag() as String
                         viewModel.selectedMonth = selectedMonth
-                        println(viewModel.selectedMonth)
                         val navController = Navigation.findNavController(it)
                         navController.navigate(R.id.action_navigation_dashboard_to_navigation_home)
                     })
