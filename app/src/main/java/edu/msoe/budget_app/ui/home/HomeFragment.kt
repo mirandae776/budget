@@ -202,7 +202,12 @@ class HomeFragment : Fragment() {
 
                 if (total > budget) {
                     row.setBackgroundColor(root.resources.getColor(android.R.color.holo_red_light))
+                    dateTextView.setBackgroundColor(root.resources.getColor(android.R.color.holo_red_light))
                     moneySpentTextView.setBackgroundColor(root.resources.getColor(android.R.color.holo_red_light))
+                    descriptionTextView.setBackgroundColor(root.resources.getColor(android.R.color.holo_red_light))
+                    deleteIcon.setBackgroundColor(root.resources.getColor(android.R.color.holo_red_light))
+                    Toast.makeText(root.context, "Spending Exceeds current Monthly Budget", Toast.LENGTH_SHORT)
+                        .show()
                 }
 
                 tableLayout.addView(row)
@@ -217,7 +222,7 @@ class HomeFragment : Fragment() {
         }
 
         val totalText = root.findViewById<TextView>(R.id.totalText)
-        totalText.text = "Total Spending is $total"
+        totalText.text = "Total Spending is $${"%.2f".format(total)}"
     }
 
     private fun showDeleteConfirmationDialog(item: SpendingDetail, viewModel: DataViewModel) {
@@ -405,6 +410,8 @@ class HomeFragment : Fragment() {
                 // Check if the total exceeds the budget and highlight the row if needed
                 if (total > budget) {
                     row.setBackgroundColor(root.resources.getColor(android.R.color.holo_red_light))
+                    Toast.makeText(root.context, "Spending Exceeds current Monthly Budget", Toast.LENGTH_SHORT)
+                        .show()
                 }
 
                 val descriptionTextView = TextView(root.context)

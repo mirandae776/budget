@@ -29,7 +29,7 @@
         android:layout_marginStart="16dp"
         android:layout_marginTop="92dp"
         android:ems="10"
-        android:hint="Enter a Budget"
+        android:hint="Enter a Monthly Budget"
         android:textColorHint="#FFFFFF"
         android:textColor="#FFFFFF"
         android:inputType="number"

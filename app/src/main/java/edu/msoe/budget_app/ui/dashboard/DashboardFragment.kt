@@ -90,7 +90,7 @@ class DashboardFragment : Fragment() {
 
         budgetDatabaseHelper = BudgetDatabaseHelper(requireContext())
 
-        val dataButton = root.findViewById<Button>(R.id.testDataButton)
+        //val dataButton = root.findViewById<Button>(R.id.testDataButton)
         //var spendingDetails = context?.let { viewModel.getSpendingDetails(it) }
 
         val spendingDetails = viewModel.getSpendingDetails(requireContext())
@@ -171,7 +171,7 @@ class DashboardFragment : Fragment() {
 
         }
 
-        val textView: TextView = binding.textDashboard
+        val textView: TextView = binding.textView2
         dashboardViewModel.text.observe(viewLifecycleOwner) {
             textView.text = it
         }
